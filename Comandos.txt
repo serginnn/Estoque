@@ -1,0 +1,11 @@
+Comandos
+rodar o front-end:
+cd frontend
+npm install
+npm run dev
+
+
+rodar o back-end:
+cd backend
+npm install express cors sqlite3
+node server.js
