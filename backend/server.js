@@ -6,6 +6,8 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
+console.log("Banco sendo usado:", path.resolve(__dirname, '../database/estoque.db'));
+
 const db = new sqlite3.Database(path.resolve(__dirname, '../database/estoque.db'));
 
 app.use(cors());
@@ -71,6 +73,8 @@ app.post('/api/usuarios', (req, res) => {
 // Login
 app.post('/api/login', (req, res) => {
   const { nome, senha } = req.body;
+  console.log("Tentativa de login:", nome, senha);
+
   db.get('SELECT * FROM usuarios WHERE nome = ? AND senha = ?', [nome, senha], (err, row) => {
     if (row) {
       res.json({ token: 'fake-token', nome: row.nome });
