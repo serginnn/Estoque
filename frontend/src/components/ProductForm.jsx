@@ -6,7 +6,7 @@ export default function ProductForm() {
   const [preco, setPreco] = useState('');
 
   const adicionarProduto = () => {
-    fetch('http://localhost:3000/api/produtos', {
+    fetch('/api/produtos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome, quantidade: +quantidade, preco: +preco })

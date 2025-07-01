@@ -6,7 +6,7 @@ export default function Register({ onVoltar }) {
   const [mensagem, setMensagem] = useState('');
 
   const cadastrar = () => {
-    fetch('http://localhost:3000/api/usuarios', {
+    fetch('/api/usuarios', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome, senha })

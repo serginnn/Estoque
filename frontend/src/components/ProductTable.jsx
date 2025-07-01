@@ -6,13 +6,13 @@ export default function ProductTable() {
   const [form, setForm] = useState({ nome: '', quantidade: '', preco: '' });
 
   const carregar = () => {
-    fetch('http://localhost:3000/api/produtos')
+    fetch('/api/produtos')
       .then(res => res.json())
       .then(setProdutos);
   };
 
   const deletarProduto = (id) => {
-    fetch(`http://localhost:3000/api/produtos/${id}`, { method: 'DELETE' })
+    fetch(`/api/produtos/${id}`, { method: 'DELETE' })
       .then(carregar);
   };
 
@@ -22,7 +22,7 @@ export default function ProductTable() {
   };
 
   const salvarEdicao = (id) => {
-    fetch(`http://localhost:3000/api/produtos/${id}`, {
+    fetch(`/api/produtos/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form)
