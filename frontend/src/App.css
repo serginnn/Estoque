@@ -1,8 +1,20 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  /* padding: 2rem; */
   text-align: center;
+
+}
+
+.titulo {
+  font-size: 2.5em; /* Aumenta o tamanho da fonte */
+  color: #242424; /* Define uma cor para o título, se desejar */
+  margin-bottom: 2rem; /* Adiciona um espaço entre o título e a caixa de login */
+}
+.content{
+  /* background-color: #ffffff; */
+  max-width: 28rem; /* 448px */
+  width: 100%;
 }
 
 .logo {

@@ -3,6 +3,7 @@ import ProductForm from './components/ProductForm';
 import ProductTable from './components/ProductTable';
 import Login from './components/Login';
 import Register from './components/Register';
+import './App.css';
 
 function App() {
   const [logado, setLogado] = useState(false);
@@ -15,9 +16,9 @@ function App() {
   }, []);
 
   return (
-    <div className="root">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl">
-        <h1 className="root">Gerenciador Estocaí</h1>
+    <div>
+      <div className="content">
+        <h1 className="titulo">Gerenciador Estocaí</h1>
         {!logado ? (
           mostrarCadastro ? (
             <Register onVoltar={() => setMostrarCadastro(false)} />
