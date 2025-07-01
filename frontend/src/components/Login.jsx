@@ -23,33 +23,41 @@ export default function Login({ onLogin, onIrParaCadastro }) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <input
-        className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        placeholder="Usuário"
-        value={nome}
-        onChange={e => setNome(e.target.value)}
-      />
-      <input
-        className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        type="password"
-        placeholder="Senha"
-        value={senha}
-        onChange={e => setSenha(e.target.value)}
-      />
-      <button
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        onClick={logar}
-      >
-        Entrar
-      </button>
-      <button
-        className="text-sm text-blue-600 hover:underline self-start"
-        onClick={onIrParaCadastro}
-      >
-        Cadastrar-se
-      </button>
-      {erro && <p className="text-red-500 text-sm">{erro}</p>}
+    <div className="body">
+      <div className="auth-container">
+        <h2 className="nada">Login</h2>
+        
+        <input
+          className="auth-container input "
+          placeholder="Usuário"
+          value={nome}
+          onChange={e => setNome(e.target.value)}
+        />
+
+        <input
+          className="auth-container input "
+          type="password"
+          placeholder="Senha"
+          value={senha}
+          onChange={e => setSenha(e.target.value)}
+        />
+
+        <button
+          className="auth-container button"
+          onClick={logar}
+        >
+          Entrar
+        </button>
+
+        <button
+          className="auth-container button"
+          onClick={onIrParaCadastro}
+        >
+          Cadastrar-se
+        </button>
+
+        {erro && <p className="erro">{erro}</p>}
+      </div>
     </div>
   );
 }

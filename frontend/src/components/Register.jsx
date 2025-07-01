@@ -20,12 +20,45 @@ export default function Register({ onVoltar }) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <input className="border border-gray-300 p-2 rounded" placeholder="Novo usuário" value={nome} onChange={e => setNome(e.target.value)} />
-      <input className="border border-gray-300 p-2 rounded" type="password" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
-      <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded" onClick={cadastrar}>Cadastrar</button>
-      <button className="text-sm text-blue-600 hover:underline self-start" onClick={onVoltar}>Voltar para login</button>
-      {mensagem && <p className="text-sm text-green-700">{mensagem}</p>}
+    <div className="body">
+      <div className="auth-container">
+        <h2 className="nada">Cadastro</h2>
+
+        <input
+          className="auth-container input"
+          placeholder="Novo usuário"
+          value={nome}
+          onChange={e => setNome(e.target.value)}
+        />
+
+        <input
+          className="auth-container input"
+          type="password"
+          placeholder="Senha"
+          value={senha}
+          onChange={e => setSenha(e.target.value)}
+        />
+
+        <button
+          className="auth-container button"
+          onClick={cadastrar}
+        >
+          Cadastrar
+        </button>
+
+        <button
+          className="auth-container button"
+          onClick={onVoltar}
+        >
+          Voltar para login
+        </button>
+
+        {mensagem && (
+          <p className={`text-sm text-center ${mensagem.includes('sucesso') ? 'text-green-400' : 'text-red-400'}`}>
+            {mensagem}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
