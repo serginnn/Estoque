@@ -59,7 +59,7 @@ function App() {
         <div className="header-left">
           <h2 className="header-title">Estocaí</h2>
           <p className="header-user-info">
-            Logado como: <strong>{user.nome}</strong> ({user.role})
+            Logado como: <strong>{user.nome}</strong> 
           </p>
         </div>
         <div className="header-right">
