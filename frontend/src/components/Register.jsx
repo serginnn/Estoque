@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function Register({ onVoltar }) {
+export default function Register() {
   const [nome, setNome] = useState('');
   const [senha, setSenha] = useState('');
   const [mensagem, setMensagem] = useState('');
@@ -11,11 +11,16 @@ export default function Register({ onVoltar }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nome, senha })
     })
-      .then(res => {
+    .then(res => {
+        if (res.status === 400) throw new Error('Usuário já existe');
         if (!res.ok) throw new Error('Erro ao cadastrar');
         return res.json();
       })
-      .then(() => setMensagem('Usuário cadastrado com sucesso!'))
+      .then(()=> {
+        setMensagem('Usuário cadastrado com sucesso!');
+        setNome('');
+        setSenha('');
+      })
       .catch(() => setMensagem('Erro: usuário já existe.'));
   };
 
@@ -43,21 +48,10 @@ export default function Register({ onVoltar }) {
           className="auth-container button"
           onClick={cadastrar}
         >
-          Cadastrar
+          Cadastrar Usuário
         </button>
 
-        <button
-          className="auth-container button"
-          onClick={onVoltar}
-        >
-          Voltar para login
-        </button>
-
-        {mensagem && (
-          <p className={`text-sm text-center ${mensagem.includes('sucesso') ? 'text-green-400' : 'text-red-400'}`}>
-            {mensagem}
-          </p>
-        )}
+        {mensagem && <p style={{ color: mensagem.includes('sucesso') ? 'lightgreen' : 'salmon' }}>{mensagem}</p>}
       </div>
     </div>
   );

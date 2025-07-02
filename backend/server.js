@@ -22,8 +22,9 @@ db.run(`CREATE TABLE IF NOT EXISTS produtos (
 
 db.run(`CREATE TABLE IF NOT EXISTS usuarios (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  nome TEXT NOT NULL,
-  senha TEXT NOT NULL
+  nome TEXT NOT NULL UNIQUE,
+  senha TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'comum'
 )`);
 
 
@@ -52,11 +53,37 @@ app.delete('/api/produtos/:id', (req, res) => {
   });
 });
 
+// ROTA PARA ATUALIZAR (EDITAR) UM PRODUTO (PUT)
+app.put('/api/produtos/:id', (req, res) => {
+  const { nome, quantidade, preco } = req.body;
+  const { id } = req.params;
+
+  db.run(
+    'UPDATE produtos SET nome = ?, quantidade = ?, preco = ? WHERE id = ?',
+    [nome, quantidade, preco, id],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (this.changes === 0) {
+        return res.status(404).json({ error: 'Produto não encontrado' });
+      }
+      res.json({ message: 'Produto atualizado com sucesso' });
+    }
+  );
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
 
 // Cadastro de usuário
+
+// service
+
+//controlador (estrutura mvc)
+
+// app.post(rota -> res, res, controlador)
 app.post('/api/usuarios', (req, res) => {
   const { nome, senha } = req.body;
   db.get('SELECT * FROM usuarios WHERE nome = ?', [nome], (err, row) => {
@@ -77,7 +104,7 @@ app.post('/api/login', (req, res) => {
 
   db.get('SELECT * FROM usuarios WHERE nome = ? AND senha = ?', [nome, senha], (err, row) => {
     if (row) {
-      res.json({ token: 'fake-token', nome: row.nome });
+      res.json({ token: 'fake-token', nome: row.nome, role: row.role });
     } else {
       res.status(401).json({ error: 'Credenciais inválidas' });
     }

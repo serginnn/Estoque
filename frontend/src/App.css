@@ -3,7 +3,6 @@
   margin: 0 auto;
   /* padding: 2rem; */
   text-align: center;
-
 }
 
 .titulo {
@@ -51,4 +50,108 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* --- Layout Principal do Dashboard --- */
+.dashboard-container {
+  display: flex;
+  flex-direction: column; /* Organiza header e body em coluna */
+  height: 100vh; /* Ocupa a altura inteira da tela */
+  width: 100vw; /* Ocupa a largura inteira da tela */
+}
+
+.dashboard-body {
+  display: flex; /* Coloca sidebar e main lado a lado */
+  flex-grow: 1; /* Faz esta div ocupar todo o espaço restante na altura */
+  overflow: hidden; /* Evita barras de rolagem desnecessárias */
+}
+
+/* --- Cabeçalho (Header) --- */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between; /* Joga os itens para os cantos */
+  align-items: center;
+  padding: 0 2rem; /* Espaçamento interno horizontal */
+  background-color: #f97b0dd8; 
+  color: white;
+  height: 70px; /* Altura fixa para o cabeçalho */
+  flex-shrink: 0; /* Impede que o header encolha */
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* Espaço entre "Estocaí" e "Logado como..." */
+}
+
+.header-title {
+  font-size: 2.7em;
+  margin: 0;
+}
+
+.header-user-info {
+  margin: 0;
+  color: #060606;
+  font-size: 0.9em;
+}
+
+.header-user-info strong {
+  color: #f3983d;
+}
+
+/* Ajusta o botão de sair que está no header */
+.dashboard-header .btn-logout {
+  margin: 0; /* Remove margens que ele possa ter */
+  background-color: #e63946; /* Um vermelho mais vivo */
+}
+.dashboard-header .btn-logout:hover{
+  background-color: #c02732;
+}
+
+/* --- Barra Lateral (Sidebar) --- */
+.dashboard-sidebar {
+  width: 200px; /* Largura fixa da barra lateral */
+  background-color: #f3882b; 
+  padding: 1.5rem 1rem;
+  flex-shrink: 0; /* Impede que a sidebar encolha */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-button {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  text-align: left;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-button.active {
+  background-color: #fcfcfc5d; /* Cor de fundo para o botão ativo */
+  font-weight: bold;
+}
+
+/* --- Conteúdo Principal (Main Content) --- */
+.main-content {
+  flex-grow: 1; /* Faz o conteúdo principal ocupar todo o espaço restante na largura */
+  padding: 2rem; /* O "padding" que você pediu para o conteúdo */
+  overflow-y: auto; /* Adiciona scroll SÓ no conteúdo principal se ele for muito grande */
+  background-color: #f0f2f5; /* Fundo cinza claro para a área de trabalho */
+}
+
+.main-content-title {
+  color: #060606;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  font-size: 2em;
 }

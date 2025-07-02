@@ -1,3 +1,34 @@
+/* Estilos que o BODY SEMPRE terá, independente da tela */
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  transition: background-color 0.5s ease; /* Efeito suave na troca de fundo */
+}
+
+/* Classe para o fundo da TELA DE LOGIN */
+.login-background {
+  background-color: #242424; /* Fundo escuro caso a imagem não carregue */
+  background-image: url('/imgback.png'); /* Carrega a imagem da pasta public */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Classe para o fundo da PARTE INTERNA DO APP (Estoque) */
+.app-background {
+  align-items: flex-start;
+  justify-content: flex-start;
+  
+  background-color: #242424; /* Um cinza escuro e neutro */
+  background-image: linear-gradient(180deg, #333742 0%, #242424 100%);
+}
+
+
 /* Bloco central para login/cadastro */
 .auth-container {
   background-color: #1a1a1a;
@@ -10,21 +41,6 @@
   align-items: center;
 }
 
-/* Centraliza na tela */
-body {
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #242424; /* fundo escuro caso não carregue */
-  background-image: url('/imgback.png'); /* Carrega a imagem da pasta public */
-  background-size: cover; /* Faz a imagem cobrir todo o espaço sem distorcer */
-  background-position: center; /* Centraliza a imagem */
-  background-repeat: no-repeat; /* Evita que a imagem se repita */
-  background-attachment: fixed; /* Deixa a imagem fixa durante o scroll (efeito legal) */
-}
-
 /* Título */
 .auth-container h2 {
   margin-bottom: 1.5rem;
@@ -32,7 +48,7 @@ body {
 }
 
 /* Inputs */
-.auth-container input {
+.auth-container .input { 
   width: 100%;
   padding: 0.75rem;
   margin-bottom: 1rem;
@@ -45,7 +61,7 @@ body {
 }
 
 /* Botão */
-.auth-container button {
+.auth-container .button { 
   width: 100%;
   padding: 0.75rem;
   margin-bottom: 1rem;
@@ -59,18 +75,62 @@ body {
   transition: background-color 0.3s;
 }
 
-.auth-container button:hover {
+.auth-container .button:hover {
   background-color: #ed7600;
 }
 
 .erro {
-  color: 'red';
-  font-size: '0.9em';
-  margin-top: '0.5rem';
+  color: #ff6b6b; 
+  font-size: 0.9em;
+  margin-top: 0.5rem;
 }
 
 /* Título */
 .nada {
   font-style: oblique;
   font-size: 2.0em;
+}
+
+/* Botão de Sair (Logout) */
+.btn-logout {
+  background-color: #dc3545;
+  width: auto;
+  padding: 0.5rem 1rem;
+}
+
+.btn-logout:hover {
+  background-color: #c82333;
+}
+
+/* Informações do usuário logado */
+.user-info {
+  color: white;
+  text-align: left;
+  margin: 0 0 1rem 0;
+}
+
+.user-info strong {
+  color: #f3983d;
+}
+
+/* Painel do Gerente */
+.manager-dashboard {
+  border: 2px solid #f3983d;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 2rem;
+  background-color: #2e2e2e;
+}
+
+/* Título dentro do painel do gerente */
+.manager-dashboard .manager-title {
+  color: #f3983d;
+  margin-top: 0;
+  font-size: 1.5em;
+  text-align: left;
+}
+
+.manager-dashboard p {
+  text-align: left;
+  color: #ccc;
 }

@@ -16,48 +16,36 @@ export default function Login({ onLogin, onIrParaCadastro }) {
         return res.json();
       })
       .then(data => {
-        localStorage.setItem('token', data.token);
-        onLogin();
+        onLogin(data);
       })
       .catch(() => setErro('Usuário ou senha inválidos'));
   };
 
   return (
-    <div className="body">
-      <div className="auth-container">
-        <h2 className="nada">Login</h2>
-        
-        <input
-          className="auth-container input "
-          placeholder="Usuário"
-          value={nome}
-          onChange={e => setNome(e.target.value)}
-        />
+    <div className="auth-container">
+      <h2 className="nada">Login</h2>
+      
+      <input
+        className="input" // Classe corrigida
+        placeholder="Usuário"
+        value={nome}
+        onChange={e => setNome(e.target.value)}
+      />
 
-        <input
-          className="auth-container input "
-          type="password"
-          placeholder="Senha"
-          value={senha}
-          onChange={e => setSenha(e.target.value)}
-        />
+      <input
+        className="input" // Classe corrigida
+        type="password"
+        placeholder="Senha"
+        value={senha}
+        onChange={e => setSenha(e.target.value)}
+      />
 
-        <button
-          className="auth-container button"
-          onClick={logar}
-        >
-          Entrar
-        </button>
+      <button className="button" onClick={logar}>
+        Entrar
+      </button>
 
-        <button
-          className="auth-container button"
-          onClick={onIrParaCadastro}
-        >
-          Cadastrar-se
-        </button>
 
-        {erro && <p className="erro">{erro}</p>}
-      </div>
+      {erro && <p className="erro">{erro}</p>}
     </div>
   );
 }
