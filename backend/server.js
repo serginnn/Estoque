@@ -134,7 +134,7 @@ app.post('/api/login', (req, res) => {
     if (row) {
       // Usuário encontrado, gerar o token!
       const payload = { id: row.id, nome: row.nome, role: row.role };
-      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '8h' }); // Token expira em 8 horas
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '20m' }); // Token expira em 8 horas
 
       // Retorna o token e os dados básicos do usuário
       res.json({ token, user: { nome: row.nome, role: row.role } });
