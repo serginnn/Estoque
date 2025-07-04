@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function Register() {
+export default function Register({ token }) { // Recebe o token
   const [nome, setNome] = useState('');
   const [senha, setSenha] = useState('');
   const [mensagem, setMensagem] = useState('');
@@ -8,10 +8,14 @@ export default function Register() {
   const cadastrar = () => {
     fetch('/api/usuarios', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // NOVO: Envia o token
+      },
       body: JSON.stringify({ nome, senha })
     })
     .then(res => {
+        if (res.status === 403) throw new Error('Acesso negado');
         if (res.status === 400) throw new Error('Usuário já existe');
         if (!res.ok) throw new Error('Erro ao cadastrar');
         return res.json();
@@ -21,7 +25,7 @@ export default function Register() {
         setNome('');
         setSenha('');
       })
-      .catch(() => setMensagem('Erro: usuário já existe.'));
+      .catch(err => setMensagem(`Erro: ${err.message}.`));
   };
 
   return (

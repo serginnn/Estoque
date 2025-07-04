@@ -1,40 +1,39 @@
 import { useEffect, useState } from 'react';
 
-export default function ProductTable() {
+export default function ProductTable({ token }) { // Recebe o token como prop
   const [produtos, setProdutos] = useState([]);
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState({ nome: '', quantidade: '', preco: '' });
 
-  const carregar = () => {
-    fetch('/api/produtos')
+   const carregar = () => {
+    fetch('/api/produtos', {
+      headers: { 'Authorization': `Bearer ${token}` } // NOVO
+    })
       .then(res => res.json())
       .then(setProdutos);
   };
 
   const deletarProduto = (id) => {
-    fetch(`/api/produtos/${id}`, { method: 'DELETE' })
+    fetch(`/api/produtos/${id}`, { 
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` } // NOVO
+    })
       .then(carregar);
-  };
-
-  const iniciarEdicao = (produto) => {
-    setEditando(produto.id);
-    setForm({ nome: produto.nome, quantidade: produto.quantidade, preco: produto.preco });
   };
 
   const salvarEdicao = (id) => {
     fetch(`/api/produtos/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // NOVO
+      },
       body: JSON.stringify(form)
     }).then(() => {
       setEditando(null);
       carregar();
     });
   };
-
-  useEffect(() => {
-    carregar();
-  }, []);
 
   return (
     <table className="w-full border mt-6">

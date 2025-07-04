@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function ProductForm() {
+export default function ProductForm({ token }) { // Recebe o token como prop
   const [nome, setNome] = useState('');
   const [quantidade, setQuantidade] = useState('');
   const [preco, setPreco] = useState('');
@@ -8,12 +8,16 @@ export default function ProductForm() {
   const adicionarProduto = () => {
     fetch('/api/produtos', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` //  Envia o token
+      },
       body: JSON.stringify({ nome, quantidade: +quantidade, preco: +preco })
     }).then(() => {
       setNome('');
       setQuantidade('');
       setPreco('');
+      // Idealmente, você deve ter uma forma de recarregar a tabela aqui
     });
   };
 

@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const jwt = require('jsonwebtoken'); // Importa a biblioteca JWT
+require('dotenv').config(); //  Carrega as variáveis de ambiente do arquivo .env
 
 const app = express();
 const PORT = 3000;
@@ -27,15 +29,39 @@ db.run(`CREATE TABLE IF NOT EXISTS usuarios (
   role TEXT NOT NULL DEFAULT 'comum'
 )`);
 
+// Ele irá verificar o token em cada requisição protegida
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Formato "Bearer TOKEN"
 
-app.get('/api/produtos', (req, res) => {
+  if (token == null) return res.sendStatus(401); // Se não há token, não autorizado
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403); // Se o token não for válido, acesso proibido
+    req.user = user; // Anexa os dados do usuário (payload do token) à requisição
+    next(); // Passa para a próxima função (a rota em si)
+  });
+};
+
+// Ele verifica se o usuário autenticado tem o cargo de 'gerente'
+const authorizeGerente = (req, res, next) => {
+    // Este middleware deve rodar DEPOIS do authenticateToken
+    if (req.user.role !== 'gerente') {
+        return res.status(403).json({ error: 'Acesso negado. Rota exclusiva para gerentes.' });
+    }
+    next();
+}
+
+//Exibir produtos
+app.get('/api/produtos', authenticateToken, (req, res) => {
   db.all('SELECT * FROM produtos', [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
   });
 });
 
-app.post('/api/produtos', (req, res) => {
+//inserir produto
+app.post('/api/produtos', authenticateToken, (req, res) => {
   const { nome, quantidade, preco } = req.body;
   db.run('INSERT INTO produtos (nome, quantidade, preco) VALUES (?, ?, ?)',
     [nome, quantidade, preco],
@@ -46,7 +72,8 @@ app.post('/api/produtos', (req, res) => {
   );
 });
 
-app.delete('/api/produtos/:id', (req, res) => {
+//deletar produto
+app.delete('/api/produtos/:id', authenticateToken, (req, res) => {
   db.run('DELETE FROM produtos WHERE id = ?', [req.params.id], function (err) {
     if (err) return res.status(500).json({ error: err.message });
     res.status(204).send();
@@ -83,14 +110,15 @@ app.listen(PORT, () => {
 
 //controlador (estrutura mvc)
 
-// app.post(rota -> res, res, controlador)
-app.post('/api/usuarios', (req, res) => {
-  const { nome, senha } = req.body;
+// cadastro
+app.post('/api/usuarios', authenticateToken, authorizeGerente, (req, res) => {
+  const { nome, senha, role } = req.body;
+  // A verificação de gerente já foi feita pelos middlewares
   db.get('SELECT * FROM usuarios WHERE nome = ?', [nome], (err, row) => {
     if (row) {
       return res.status(400).json({ error: 'Usuário já existe' });
     }
-    db.run('INSERT INTO usuarios (nome, senha) VALUES (?, ?)', [nome, senha], function (err) {
+    db.run('INSERT INTO usuarios (nome, senha, role) VALUES (?, ?)', [nome, senha, role ], function (err) {
       if (err) return res.status(500).json({ error: err.message });
       res.status(201).json({ id: this.lastID, nome });
     });
@@ -100,11 +128,16 @@ app.post('/api/usuarios', (req, res) => {
 // Login
 app.post('/api/login', (req, res) => {
   const { nome, senha } = req.body;
-  console.log("Tentativa de login:", nome, senha);
+  console.log("Tentativa de login:", nome);
 
   db.get('SELECT * FROM usuarios WHERE nome = ? AND senha = ?', [nome, senha], (err, row) => {
     if (row) {
-      res.json({ token: 'fake-token', nome: row.nome, role: row.role });
+      // Usuário encontrado, gerar o token!
+      const payload = { id: row.id, nome: row.nome, role: row.role };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '8h' }); // Token expira em 8 horas
+
+      // Retorna o token e os dados básicos do usuário
+      res.json({ token, user: { nome: row.nome, role: row.role } });
     } else {
       res.status(401).json({ error: 'Credenciais inválidas' });
     }
