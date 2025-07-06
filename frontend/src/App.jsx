@@ -3,6 +3,8 @@ import ProductForm from './components/ProductForm';
 import ProductTable from './components/ProductTable';
 import Login from './components/Login';
 import GerenteDashboard from './components/GerenteDashboard';
+import RelatoriosView from './components/RelatoriosView';
+import StockView from './components/StockView';
 import './App.css';
 import './index.css';
 
@@ -11,7 +13,7 @@ function App() {
   const [token, setToken] = useState(sessionStorage.getItem('token')); // NOVO: Estado para o token
   
   //Estado para controlar a view ativa. Começa com 'estoque'.
-  const [activeView, setActiveView] = useState('estoque');
+  const [activeView, setActiveView] = useState('inicio');
 
   // Efeito para carregar usuário a partir do token ao iniciar
   useEffect(() => {
@@ -63,14 +65,6 @@ function App() {
     setUser(null);
   };
 
-  const StockView = () => (
-    <>
-      <h1 className="main-content-title">Controle de Estoque</h1>
-      {/* Passa o token para os componentes que fazem chamadas à API */}
-      <ProductForm token={token} />
-      <ProductTable token={token} />
-    </>
-  );
 
   // Se não estiver logado (sem usuário/token), mostra o Login
   if (!user) {
@@ -89,7 +83,7 @@ function App() {
         </div>
         <div className="header-right">
           <button onClick={handleLogout} className="button btn-logout">
-            Sair
+            Sair 🚪
           </button>
         </div>
       </header>
@@ -130,13 +124,13 @@ function App() {
 
         <main className="main-content">
           {/* Renderiza o conteúdo com base na view ativa */}
-          {activeView === 'estoque' && <StockView />}
+          {activeView === 'estoque' && <StockView token={token}/>}
           
           {activeView === 'cadastro' && <GerenteDashboard token={token} />}
           
           {activeView === 'inicio' && <h1 className="main-content-title">Página Inicial</h1>}
           
-          {activeView === 'relatorios' && <h1 className="main-content-title">Relatórios</h1>}
+          {activeView === 'relatorios' && <RelatoriosView token={token} />}
         </main>
       </div>
     </div>

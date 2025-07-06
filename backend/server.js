@@ -15,6 +15,7 @@ const db = new sqlite3.Database(path.resolve(__dirname, '../database/estoque.db'
 app.use(cors());
 app.use(express.json());
 
+//Tabela de produtos
 db.run(`CREATE TABLE IF NOT EXISTS produtos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   nome TEXT NOT NULL,
@@ -22,11 +23,23 @@ db.run(`CREATE TABLE IF NOT EXISTS produtos (
   preco REAL
 )`);
 
+//Tabela de usuarios
 db.run(`CREATE TABLE IF NOT EXISTS usuarios (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   nome TEXT NOT NULL UNIQUE,
   senha TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'comum'
+)`);
+
+//Tabela para guardar o histórico de transações de produtos
+db.run(`CREATE TABLE IF NOT EXISTS historico_produtos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  produto_id INTEGER,
+  produto_nome TEXT NOT NULL,
+  acao TEXT NOT NULL, -- Ex: 'CRIADO', 'ATUALIZADO', 'DELETADO'
+  detalhes TEXT, -- Ex: 'Quantidade alterada de 10 para 15'
+  usuario_nome TEXT NOT NULL, -- Quem fez a ação
+  timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 )`);
 
 // Ele irá verificar o token em cada requisição protegida
@@ -52,52 +65,119 @@ const authorizeGerente = (req, res, next) => {
     next();
 }
 
-//Exibir produtos
-app.get('/api/produtos', authenticateToken, (req, res) => {
-  db.all('SELECT * FROM produtos', [], (err, rows) => {
+//Rota para buscar todos os registros de histórico
+app.get('/api/historico', authenticateToken, (req, res) => {
+  db.all('SELECT * FROM historico_produtos ORDER BY timestamp DESC', [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
   });
 });
 
-//inserir produto
+// Adicionar Produto 
 app.post('/api/produtos', authenticateToken, (req, res) => {
   const { nome, quantidade, preco } = req.body;
-  db.run('INSERT INTO produtos (nome, quantidade, preco) VALUES (?, ?, ?)',
-    [nome, quantidade, preco],
-    function (err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.status(201).json({ id: this.lastID, nome, quantidade, preco });
-    }
-  );
-});
-
-//deletar produto
-app.delete('/api/produtos/:id', authenticateToken, (req, res) => {
-  db.run('DELETE FROM produtos WHERE id = ?', [req.params.id], function (err) {
+  const usuario_nome = req.user.nome; // Pega o nome do usuário do token JWT
+   if (preco < 0) {
+    return res.status(400).json({ error: 'O preço não pode ser negativo.' });
+  }
+  db.run('INSERT INTO produtos (nome, quantidade, preco) VALUES (?, ?, ?)', [nome, quantidade, preco], function (err) {
     if (err) return res.status(500).json({ error: err.message });
-    res.status(204).send();
+    const novoProdutoId = this.lastID;
+    
+    // Log da criação
+    const detalhes = `Produto criado com Qtd: ${quantidade} e Preço: R$ ${preco}`;
+    db.run('INSERT INTO historico_produtos (produto_id, produto_nome, acao, detalhes, usuario_nome) VALUES (?, ?, ?, ?, ?)',
+      [novoProdutoId, nome, 'CRIADO', detalhes, usuario_nome]);
+
+    res.status(201).json({ id: novoProdutoId, nome, quantidade, preco });
   });
 });
 
-// ROTA PARA ATUALIZAR (EDITAR) UM PRODUTO (PUT)
-app.put('/api/produtos/:id', (req, res) => {
+// Deletar Produto 
+app.delete('/api/produtos/:id', authenticateToken, (req, res) => {
+  const produtoId = req.params.id;
+  const usuario_nome = req.user.nome;
+   if (preco < 0) {
+    return res.status(400).json({ error: 'O preço não pode ser negativo.' });
+  }
+  // Primeiro, busca o nome do produto antes de deletar, para salvar no log
+  db.get('SELECT nome FROM produtos WHERE id = ?', [produtoId], (err, produto) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!produto) return res.status(404).json({ error: 'Produto não encontrado' });
+
+    db.run('DELETE FROM produtos WHERE id = ?', [produtoId], function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      
+      // Log da exclusão
+      db.run('INSERT INTO historico_produtos (produto_id, produto_nome, acao, detalhes, usuario_nome) VALUES (?, ?, ?, ?, ?)',
+        [produtoId, produto.nome, 'DELETADO', 'Produto removido do sistema', usuario_nome]);
+
+      res.status(204).send();
+    });
+  });
+});
+
+//Remove uma quantidade específica de um produto
+app.post('/api/produtos/remover-quantidade', authenticateToken, (req, res) => {
+  const { nome, quantidade } = req.body;
+  const usuario_nome = req.user.nome;
+
+  // Validações iniciais
+  if (!nome || !quantidade) {
+    return res.status(400).json({ error: 'Nome do produto e quantidade são obrigatórios.' });
+  }
+  if (parseInt(quantidade) <= 0) {
+    return res.status(400).json({ error: 'A quantidade a ser removida deve ser maior que zero.' });
+  }
+
+  // Busca o produto pelo nome para verificar o estoque atual
+  db.get('SELECT * FROM produtos WHERE nome = ?', [nome], (err, produto) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!produto) return res.status(404).json({ error: 'Produto não encontrado.' });
+
+    // Verifica se há estoque suficiente
+    if (produto.quantidade < quantidade) {
+      return res.status(400).json({ error: `Estoque insuficiente. Apenas ${produto.quantidade} unidades disponíveis.` });
+    }
+
+    const novaQuantidade = produto.quantidade - quantidade;
+    
+    // Atualiza a quantidade do produto no banco de dados
+    db.run('UPDATE produtos SET quantidade = ? WHERE id = ?', [novaQuantidade, produto.id], function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+
+      // Log da remoção de quantidade no histórico
+      const detalhes = `${quantidade} unidade(s) removida(s). Estoque anterior: ${produto.quantidade}, Estoque atual: ${novaQuantidade}.`;
+      db.run('INSERT INTO historico_produtos (produto_id, produto_nome, acao, detalhes, usuario_nome) VALUES (?, ?, ?, ?, ?)',
+        [produto.id, produto.nome, 'SAÍDA', detalhes, usuario_nome]);
+      
+      res.json({ message: 'Quantidade removida com sucesso!' });
+    });
+  });
+});
+
+// Atualizar Produto 
+app.put('/api/produtos/:id', authenticateToken, (req, res) => {
   const { nome, quantidade, preco } = req.body;
   const { id } = req.params;
+  const usuario_nome = req.user.nome;
 
-  db.run(
-    'UPDATE produtos SET nome = ?, quantidade = ?, preco = ? WHERE id = ?',
-    [nome, quantidade, preco, id],
-    function (err) {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (this.changes === 0) {
-        return res.status(404).json({ error: 'Produto não encontrado' });
-      }
+  // Busca o estado antigo do produto para comparar
+  db.get('SELECT * FROM produtos WHERE id = ?', [id], (err, produtoAntigo) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!produtoAntigo) return res.status(404).json({ error: 'Produto não encontrado' });
+    
+    db.run('UPDATE produtos SET nome = ?, quantidade = ?, preco = ? WHERE id = ?', [nome, quantidade, preco, id], function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      
+      // Log da atualização com detalhes
+      const detalhes = `De [Qtd: ${produtoAntigo.quantidade}, Preço: R$ ${produtoAntigo.preco}] para [Qtd: ${quantidade}, Preço: R$ ${preco}]`;
+      db.run('INSERT INTO historico_produtos (produto_id, produto_nome, acao, detalhes, usuario_nome) VALUES (?, ?, ?, ?, ?)',
+        [id, nome, 'ATUALIZADO', detalhes, usuario_nome]);
+        
       res.json({ message: 'Produto atualizado com sucesso' });
-    }
-  );
+    });
+  });
 });
 
 app.listen(PORT, () => {

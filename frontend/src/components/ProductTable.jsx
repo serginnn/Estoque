@@ -1,48 +1,66 @@
 import { useEffect, useState } from 'react';
 
-export default function ProductTable({ token }) { // Recebe o token como prop
+export default function ProductTable({ token }) {
   const [produtos, setProdutos] = useState([]);
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState({ nome: '', quantidade: '', preco: '' });
 
-   const carregar = () => {
+  // NOVO: useEffect para carregar os dados quando o componente é montado
+  useEffect(() => {
+    carregar();
+  }, [token]); // Roda sempre que o token mudar (basicamente uma vez no login)
+
+  const carregar = () => {
     fetch('/api/produtos', {
-      headers: { 'Authorization': `Bearer ${token}` } // NOVO
+      headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => res.json())
-      .then(setProdutos);
+      .then(data => setProdutos(data || [])) // Garante que produtos seja sempre um array
+      .catch(err => console.error("Erro ao carregar produtos:", err));
   };
 
   const deletarProduto = (id) => {
     fetch(`/api/produtos/${id}`, { 
       method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` } // NOVO
+      headers: { 'Authorization': `Bearer ${token}` }
     })
-      .then(carregar);
+    .then(() => carregar()); // Recarrega a lista após deletar
+  };
+  
+  // NOVO: Função para iniciar a edição de um produto
+  const iniciarEdicao = (produto) => {
+    setEditando(produto.id);
+    setForm({ nome: produto.nome, quantidade: produto.quantidade, preco: produto.preco });
   };
 
   const salvarEdicao = (id) => {
+    // Validação de preço no frontend antes de salvar
+    if (form.preco < 0) {
+        alert('O preço não pode ser negativo.');
+        return;
+    }
+    
     fetch(`/api/produtos/${id}`, {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // NOVO
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(form)
     }).then(() => {
       setEditando(null);
-      carregar();
+      carregar(); // Recarrega a lista após salvar
     });
   };
 
   return (
-    <table className="w-full border mt-6">
+    <table className="report-table"> {/* Usando o estilo de tabela dos relatórios */}
       <thead>
-        <tr className="bg-gray-200">
-          <th className="p-2 border">Nome</th>
-          <th className="p-2 border">Qtd</th>
-          <th className="p-2 border">Preço</th>
-          <th className="p-2 border">Ação</th>
+        <tr>
+          <th>Nome do Produto</th>
+          <th>Quantidade</th>
+          <th>Preço</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -50,27 +68,21 @@ export default function ProductTable({ token }) { // Recebe o token como prop
           <tr key={p.id}>
             {editando === p.id ? (
               <>
-                <td className="p-2 border">
-                  <input value={form.nome} onChange={e => setForm({ ...form, nome: e.target.value })} />
-                </td>
-                <td className="p-2 border">
-                  <input type="number" value={form.quantidade} onChange={e => setForm({ ...form, quantidade: +e.target.value })} />
-                </td>
-                <td className="p-2 border">
-                  <input type="number" value={form.preco} onChange={e => setForm({ ...form, preco: +e.target.value })} />
-                </td>
-                <td className="p-2 border">
-                  <button className="bg-green-500 text-white px-2 rounded" onClick={() => salvarEdicao(p.id)}>Salvar</button>
+                <td><input className="input" value={form.nome} onChange={e => setForm({ ...form, nome: e.target.value })} /></td>
+                <td><input className="input" type="number" value={form.quantidade} onChange={e => setForm({ ...form, quantidade: +e.target.value })} /></td>
+                <td><input className="input" type="number" min="0" step="0.01" value={form.preco} onChange={e => setForm({ ...form, preco: +e.target.value })} /></td>
+                <td>
+                  <button className="btn btn-primary" onClick={() => salvarEdicao(p.id)}>Salvar</button>
                 </td>
               </>
             ) : (
               <>
-                <td className="p-2 border">{p.nome}</td>
-                <td className="p-2 border">{p.quantidade}</td>
-                <td className="p-2 border">R$ {p.preco}</td>
-                <td className="p-2 border">
-                  <button className="bg-yellow-500 text-white px-2 mr-2 rounded" onClick={() => iniciarEdicao(p)}>Editar</button>
-                  <button className="bg-red-500 text-white px-2 rounded" onClick={() => deletarProduto(p.id)}>Excluir</button>
+                <td>{p.nome}</td>
+                <td>{p.quantidade}</td>
+                <td>R$ {p.preco.toFixed(2)}</td>
+                <td>
+                  <button className="btn btn-secondary" style={{ marginRight: '0.5rem' }} onClick={() => iniciarEdicao(p)}>Editar</button>
+                  <button className="btn btn-primary" style={{ backgroundColor: '#dc3545', borderColor: '#dc3545' }} onClick={() => deletarProduto(p.id)}>Excluir</button>
                 </td>
               </>
             )}
