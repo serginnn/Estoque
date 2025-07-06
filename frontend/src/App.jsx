@@ -9,6 +9,9 @@ import './index.css';
 function App() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(sessionStorage.getItem('token')); // NOVO: Estado para o token
+  
+  //Estado para controlar a view ativa. Começa com 'estoque'.
+  const [activeView, setActiveView] = useState('estoque');
 
   // Efeito para carregar usuário a partir do token ao iniciar
   useEffect(() => {
@@ -93,22 +96,47 @@ function App() {
 
       <div className="dashboard-body">
         <aside className="dashboard-sidebar">
-          <button className="sidebar-button">Início</button>
-          <button className="sidebar-button active">Estoque</button>
-          <button className="sidebar-button">Relatórios</button>
+          <button 
+            className={`sidebar-button ${activeView === 'inicio' ? 'active' : ''}`}
+            onClick={() => setActiveView('inicio')}
+          >
+            Início
+          </button>
+
+          <button 
+            className={`sidebar-button ${activeView === 'estoque' ? 'active' : ''}`}
+            onClick={() => setActiveView('estoque')}
+          >
+            Estoque
+          </button>
+          
+          {/* NOVO: Botão de Cadastro, visível apenas para o gerente */}
+          {user.role === 'gerente' && (
+            <button
+              className={`sidebar-button ${activeView === 'cadastro' ? 'active' : ''}`}
+              onClick={() => setActiveView('cadastro')}
+            >
+              Cadastro
+            </button>
+          )}
+
+          <button 
+            className={`sidebar-button ${activeView === 'relatorios' ? 'active' : ''}`}
+            onClick={() => setActiveView('relatorios')}
+          >
+            Relatórios
+          </button>
         </aside>
 
         <main className="main-content">
-          {/* Renderização condicional baseada no cargo do usuário */}
-          {user.role === 'gerente' ? (
-            <>
-              <StockView />
-              {/* Passa o token para o painel do gerente */}
-              <GerenteDashboard token={token} /> 
-            </>
-          ) : (
-            <StockView />
-          )}
+          {/* Renderiza o conteúdo com base na view ativa */}
+          {activeView === 'estoque' && <StockView />}
+          
+          {activeView === 'cadastro' && <GerenteDashboard token={token} />}
+          
+          {activeView === 'inicio' && <h1 className="main-content-title">Página Inicial</h1>}
+          
+          {activeView === 'relatorios' && <h1 className="main-content-title">Relatórios</h1>}
         </main>
       </div>
     </div>
