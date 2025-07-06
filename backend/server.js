@@ -113,14 +113,17 @@ app.listen(PORT, () => {
 // cadastro
 app.post('/api/usuarios', authenticateToken, authorizeGerente, (req, res) => {
   const { nome, senha, role } = req.body;
+  if (!['comum', 'gerente'].includes(role)) {
+    return res.status(400).json({ error: 'Cargo inválido.' });
+  }
   // A verificação de gerente já foi feita pelos middlewares
   db.get('SELECT * FROM usuarios WHERE nome = ?', [nome], (err, row) => {
     if (row) {
       return res.status(400).json({ error: 'Usuário já existe' });
     }
-    db.run('INSERT INTO usuarios (nome, senha, role) VALUES (?, ?)', [nome, senha, role ], function (err) {
+    db.run('INSERT INTO usuarios (nome, senha, role) VALUES (?, ?, ?)', [nome, senha, role ], function (err) {
       if (err) return res.status(500).json({ error: err.message });
-      res.status(201).json({ id: this.lastID, nome });
+      res.status(201).json({ id: this.lastID, nome, role });
     });
   });
 });

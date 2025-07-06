@@ -8,23 +8,31 @@ import './index.css';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token')); // NOVO: Estado para o token
+  const [token, setToken] = useState(sessionStorage.getItem('token')); // NOVO: Estado para o token
 
   // Efeito para carregar usuário a partir do token ao iniciar
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
+    const storedToken = sessionStorage.getItem('token');
     if (storedToken) {
       // A API de login agora retorna o token e o objeto 'user'
       // Para simplificar, vamos buscar o usuário no localStorage também
-      const storedUser = localStorage.getItem('user');
+      const storedUser = sessionStorage.getItem('user');
       if(storedUser) {
-          setUser(JSON.parse(storedUser));
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
           setToken(storedToken);
+        } catch (error) {
+          console.error("Erro ao fazer parse do usuário do sessionStorage:", error);
+          // ALTERADO: Limpa o sessionStorage em caso de erro
+          sessionStorage.removeItem('user');
+          sessionStorage.removeItem('token');
+        }
       }
     }
   }, []);
 
-  // Efeito para classes do body (sem alterações)
+  // Efeito para classes do body 
   useEffect(() => {
     document.body.classList.remove('login-background', 'app-background');
     if (user) {
@@ -39,15 +47,15 @@ function App() {
 
   // ALTERADO: handleLogin agora recebe dados da API (token e user)
   const handleLogin = (data) => {
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user)); // Armazena o usuário também
+    sessionStorage.setItem('token', data.token);
+    sessionStorage.setItem('user', JSON.stringify(data.user));
     setToken(data.token);
     setUser(data.user);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+   const handleLogout = () => {
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     setToken(null);
     setUser(null);
   };
