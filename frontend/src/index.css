@@ -1,12 +1,8 @@
 /* Estilos que o BODY SEMPRE terá, independente da tela */
 body {
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  transition: background-color 0.5s ease; /* Efeito suave na troca de fundo */
+  transition: background-color 0.5s ease;
 }
 
 /* Classe para o fundo da TELA DE LOGIN */
