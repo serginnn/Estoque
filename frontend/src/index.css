@@ -119,23 +119,17 @@ body {
 }
 
 /* Painel do Gerente */
-.manager-dashboard {
-  border: 2px solid #f3983d;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-top: 2rem;
-  background-color: #2e2e2e;
+.register-form-container {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center;    /* Centraliza verticalmente (se houver altura) */
+  padding: 2rem 0; /* Adiciona um espaço vertical */
 }
 
-/* Título dentro do painel do gerente */
-.manager-dashboard .manager-title {
-  color: #f3983d;
+/* O título e o parágrafo usarão os estilos gerais que já existem */
+.main-content-title {
+  color: #060606;
   margin-top: 0;
-  font-size: 1.5em;
-  text-align: left;
-}
-
-.manager-dashboard p {
-  text-align: left;
-  color: #ccc;
+  margin-bottom: 2rem;
+  font-size: 2em;
 }

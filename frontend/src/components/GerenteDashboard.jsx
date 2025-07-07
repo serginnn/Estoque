@@ -1,13 +1,16 @@
 import React from 'react';
 import Register from './Register';
 
-function GerenteDashboard({ token }) { // Recebe o token
+function GerenteDashboard({ token }) {
   return (
-    <div className="manager-dashboard"> 
-      <h3 className="manager-title">Painel do Gerente</h3>
-      <p>Use o formulário abaixo para cadastrar novos usuários no sistema.</p>
+    <div className="manager-dashboard-view"> 
+    
+      <h1 className="main-content-title">Painel de Cadastro</h1>
 
-      <Register token={token} /> {/* Passa o token para Register */}
+      <div className="register-form-container">
+        <Register token={token} />
+      </div>
+
     </div>
   );
 }
