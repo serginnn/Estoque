@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import ProductForm from './ProductForm';
 import ProductTable from './ProductTable';
+import RecentActivity from './RecentActivity';
 
-// --- Componente do Modal (sem alterações) ---
+// --- Componente do Modal ---
 const Modal = ({ show, onClose, title, children }) => {
   if (!show) return null;
   return (
@@ -18,7 +19,7 @@ const Modal = ({ show, onClose, title, children }) => {
   );
 };
 
-// --- Formulário para Adicionar Quantidade (já existente) ---
+// --- Formulário de Adicionar Quantidade ---
 const AddQuantityForm = ({ token, onActionComplete }) => {
   const [nome, setNome] = useState('');
   const [quantidadeAdicionar, setQuantidadeAdicionar] = useState('');
@@ -34,17 +35,14 @@ const AddQuantityForm = ({ token, onActionComplete }) => {
       body: JSON.stringify({ nome, quantidadeAdicionar: +quantidadeAdicionar })
     })
     .then(async res => {
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error);
-      }
+      if (!res.ok) { const errData = await res.json(); throw new Error(errData.error); }
       return res.json();
     })
     .then(data => {
       setSuccess(data.message);
+      onActionComplete(`Adicionou ${quantidadeAdicionar} unidade(s) ao produto "${nome}".`);
       setNome('');
       setQuantidadeAdicionar('');
-      onActionComplete();
     })
     .catch(err => setError(err.message));
   };
@@ -60,7 +58,7 @@ const AddQuantityForm = ({ token, onActionComplete }) => {
   );
 };
 
-// --- NOVO: Componente para o formulário de Remover Quantidade ---
+// --- Formulário de Remover Quantidade ---
 const RemoveQuantityForm = ({ token, onActionComplete }) => {
   const [nome, setNome] = useState('');
   const [quantidade, setQuantidade] = useState('');
@@ -76,21 +74,18 @@ const RemoveQuantityForm = ({ token, onActionComplete }) => {
       body: JSON.stringify({ nome, quantidade: +quantidade })
     })
     .then(async res => {
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error);
-      }
+      if (!res.ok) { const errData = await res.json(); throw new Error(errData.error); }
       return res.json();
     })
     .then(data => {
       setSuccess(data.message);
+      onActionComplete(`Removeu ${quantidade} unidade(s) do produto "${nome}".`);
       setNome('');
       setQuantidade('');
-      onActionComplete();
     })
     .catch(err => setError(err.message));
   };
-
+  
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <input className="input" placeholder="Nome do Produto" value={nome} onChange={(e) => setNome(e.target.value)} />
@@ -105,36 +100,45 @@ const RemoveQuantityForm = ({ token, onActionComplete }) => {
 };
 
 
-// --- Componente Principal da Tela de Estoque (com todas as atualizações) ---
-export default function StockView({ token }) {
+// --- Componente Principal da Tela de Estoque ---
+export default function StockView({ token, sessionActivity, addActivityLog }) {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isAddQuantityModalOpen, setIsAddQuantityModalOpen] = useState(false);
-  // NOVO: Estado para o modal de remoção
   const [isRemoveQuantityModalOpen, setIsRemoveQuantityModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleActionComplete = () => {
+
+  const handleActionComplete = (logMessage) => {
+    addActivityLog(logMessage); // Chama a função do App.jsx
+
     setIsRegisterModalOpen(false);
     setIsAddQuantityModalOpen(false);
-    setIsRemoveQuantityModalOpen(false); // ALTERADO: Também fecha o modal de remoção
+    setIsRemoveQuantityModalOpen(false);
     setRefreshKey(prevKey => prevKey + 1);
+  };
+
+  const handleProductAdded = (logMessage) => {
+    handleActionComplete(logMessage);
+  };
+  
+  // No ProductForm, precisamos de uma função específica para o log
+  const handleProductAddedForForm = () => {
+    handleActionComplete("Novo produto cadastrado.");
   };
 
   return (
     <div>
       <h1 className="main-content-title">Estoque</h1>
 
+      {/* OS BOTÕES FORAM ADICIONADOS DE VOLTA AQUI DENTRO DO HEADER */}
       <header className="stock-header">
         <div className="stock-header-actions">
           <button className="btn btn-primary" onClick={() => setIsRegisterModalOpen(true)}>
             + Cadastrar produto
           </button>
-          
           <button className="btn btn-secondary" onClick={() => setIsAddQuantityModalOpen(true)}>
             + Adicionar Quantidade
           </button>
-
-          {/* NOVO: Botão para abrir o modal de remoção de quantidade */}
           <button className="btn btn-secondary" style={{ color: '#dc3545', borderColor: '#dc3545' }} onClick={() => setIsRemoveQuantityModalOpen(true)}>
             - Remover Quantidade
           </button>
@@ -142,19 +146,19 @@ export default function StockView({ token }) {
       </header>
       
       <Modal show={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} title="Cadastrar Novo Produto">
-        <ProductForm token={token} onProductAdded={handleActionComplete} />
+        <ProductForm token={token} onProductAdded={handleProductAddedForForm} />
       </Modal>
 
       <Modal show={isAddQuantityModalOpen} onClose={() => setIsAddQuantityModalOpen(false)} title="Adicionar Quantidade ao Estoque">
         <AddQuantityForm token={token} onActionComplete={handleActionComplete} />
       </Modal>
-
-      {/* NOVO: O modal para remover quantidade */}
+      
       <Modal show={isRemoveQuantityModalOpen} onClose={() => setIsRemoveQuantityModalOpen(false)} title="Remover Quantidade do Estoque">
         <RemoveQuantityForm token={token} onActionComplete={handleActionComplete} />
       </Modal>
+      
+      <RecentActivity sessionActivity={sessionActivity} />
 
-      <ProductTable token={token} key={refreshKey} />
     </div>
   );
 }

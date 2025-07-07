@@ -41,7 +41,7 @@ db.run(`CREATE TABLE IF NOT EXISTS historico_produtos (
   acao TEXT NOT NULL, -- Ex: 'CRIADO', 'ATUALIZADO', 'DELETADO'
   detalhes TEXT, -- Ex: 'Quantidade alterada de 10 para 15'
   usuario_nome TEXT NOT NULL, -- Quem fez a ação
-  timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+  timestamp DATETIME DEFAULT (datetime('now', 'localtime'))
 )`);
 
 // Ele irá verificar o token em cada requisição protegida
@@ -298,5 +298,14 @@ app.post('/api/produtos/adicionar-quantidade', authenticateToken, (req, res) => 
       
       res.json({ message: 'Quantidade adicionada com sucesso!' });
     });
+  });
+});
+
+// Endpoint para buscar o histórico de um produto específico pelo ID
+app.get('/api/historico/:produtoId', authenticateToken, (req, res) => {
+  const { produtoId } = req.params;
+  db.all('SELECT * FROM historico_produtos WHERE produto_id = ? ORDER BY timestamp DESC', [produtoId], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
   });
 });

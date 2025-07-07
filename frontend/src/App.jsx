@@ -17,6 +17,7 @@ function App() {
   //Estado para controlar a view ativa. Começa com 'estoque'.
   const [activeView, setActiveView] = useState('inicio');
 
+  const [sessionActivity, setSessionActivity] = useState([]);
   // Efeito para carregar usuário a partir do token ao iniciar
   useEffect(() => {
     const storedToken = sessionStorage.getItem('token');
@@ -65,8 +66,20 @@ function App() {
     sessionStorage.removeItem('user');
     setToken(null);
     setUser(null);
+    setSessionActivity([]);
+    setActiveView('inicio');
   };
 
+  const addActivityLog = (logMessage) => {
+    if (logMessage) {
+      const newActivity = {
+        message: logMessage,
+        time: new Date().toLocaleTimeString('pt-BR'),
+      };
+      // Adiciona a nova atividade no topo da lista
+      setSessionActivity(prevActivity => [newActivity, ...prevActivity]);
+    }
+  };
 
   // Se não estiver logado (sem usuário/token), mostra o Login
   if (!user) {
@@ -111,14 +124,16 @@ function App() {
             Estoque
           </button>
 
-          <button 
-            className={`sidebar-button ${activeView === 'relatorios' ? 'active' : ''}`}
-            onClick={() => setActiveView('relatorios')}
-          >
-            Relatórios
-          </button>
+          {user.role === 'gerente' && (
+            <button 
+              className={`sidebar-button ${activeView === 'relatorios' ? 'active' : ''}`}
+              onClick={() => setActiveView('relatorios')}
+            >
+              Relatórios
+            </button>
+          )}
 
-          {/* NOVO: Botão de Cadastro, visível apenas para o gerente */}
+          {/* Botão de Cadastro, visível apenas para o gerente */}
           {user.role === 'gerente' && (
             <button
               className={`sidebar-button ${activeView === 'cadastro' ? 'active' : ''}`}
@@ -132,7 +147,7 @@ function App() {
         <div className="content-and-footer-wrapper">
           <main className="main-content">
             {/* Renderiza o conteúdo com base na view ativa */}
-            {activeView === 'estoque' && <StockView token={token}/>}
+            {activeView === 'estoque' && <StockView token={token} sessionActivity={sessionActivity} addActivityLog={addActivityLog} />}
             
             {activeView === 'cadastro' && <GerenteDashboard token={token} />}
             
