@@ -358,3 +358,68 @@
 .remove-product-form button {
   align-self: flex-end;
 }
+
+/* --- Estilos do Dashboard de Início --- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.dashboard-card {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.dashboard-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2em;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.dashboard-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-card li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.dashboard-card li:last-child {
+  border-bottom: none;
+}
+
+/* --- Estilos do Rodapé --- */
+.app-footer {
+  text-align: center;
+  padding: 0.03rem;
+  background-color: #2e2e2e71;
+  color: #aaa;
+  font-size: 0.9em;
+  border-top: 1px solid #e0e0e0; /* Adiciona uma linha sutil de separação */
+}
+
+.app-footer a {
+  color: #f3983d;
+  text-decoration: none;
+}
+.app-footer a:hover {
+  text-decoration: underline;
+}
+
+.content-and-footer-wrapper {
+  flex-grow: 1; /* Faz ocupar todo o espaço à direita da sidebar */
+  display: flex;
+  flex-direction: column; /* Empilha o conteúdo e o rodapé verticalmente */
+  overflow: hidden; /* Evita barras de rolagem duplas */
+}

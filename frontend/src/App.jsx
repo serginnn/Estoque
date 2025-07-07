@@ -5,6 +5,8 @@ import Login from './components/Login';
 import GerenteDashboard from './components/GerenteDashboard';
 import RelatoriosView from './components/RelatoriosView';
 import StockView from './components/StockView';
+import DashboardView from './components/DashboardView';
+import Footer from './components/Footer';
 import './App.css';
 import './index.css';
 
@@ -122,16 +124,19 @@ function App() {
           </button>
         </aside>
 
-        <main className="main-content">
-          {/* Renderiza o conteúdo com base na view ativa */}
-          {activeView === 'estoque' && <StockView token={token}/>}
-          
-          {activeView === 'cadastro' && <GerenteDashboard token={token} />}
-          
-          {activeView === 'inicio' && <h1 className="main-content-title">Página Inicial</h1>}
-          
-          {activeView === 'relatorios' && <RelatoriosView token={token} />}
-        </main>
+        <div className="content-and-footer-wrapper">
+          <main className="main-content">
+            {/* Renderiza o conteúdo com base na view ativa */}
+            {activeView === 'estoque' && <StockView token={token}/>}
+            
+            {activeView === 'cadastro' && <GerenteDashboard token={token} />}
+            
+            {activeView === 'inicio' && <DashboardView token={token}/>}
+            
+            {activeView === 'relatorios' && <RelatoriosView token={token} />}
+          </main>
+          <Footer />
+        </div>
       </div>
     </div>
   );

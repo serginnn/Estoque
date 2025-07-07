@@ -20,7 +20,9 @@ db.run(`CREATE TABLE IF NOT EXISTS produtos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   nome TEXT NOT NULL,
   quantidade INTEGER,
-  preco REAL
+  preco REAL,
+  min_stock INTEGER DEFAULT 10,
+  max_stock INTEGER DEFAULT 100 
 )`);
 
 //Tabela de usuarios
@@ -75,21 +77,24 @@ app.get('/api/historico', authenticateToken, (req, res) => {
 
 // Adicionar Produto 
 app.post('/api/produtos', authenticateToken, (req, res) => {
-  const { nome, quantidade, preco } = req.body;
-  const usuario_nome = req.user.nome; // Pega o nome do usuário do token JWT
-   if (preco < 0) {
-    return res.status(400).json({ error: 'O preço não pode ser negativo.' });
+  const { nome, quantidade, preco, min_stock, max_stock } = req.body;
+  const usuario_nome = req.user.nome;
+
+  if (preco < 0) {
+    return res.status(400).json({ error: 'O preço не pode ser negativo.' });
   }
-  db.run('INSERT INTO produtos (nome, quantidade, preco) VALUES (?, ?, ?)', [nome, quantidade, preco], function (err) {
+
+  const sql = 'INSERT INTO produtos (nome, quantidade, preco, min_stock, max_stock) VALUES (?, ?, ?, ?, ?)';
+  
+  db.run(sql, [nome, quantidade, preco, min_stock, max_stock], function (err) {
     if (err) return res.status(500).json({ error: err.message });
     const novoProdutoId = this.lastID;
     
-    // Log da criação
-    const detalhes = `Produto criado com Qtd: ${quantidade} e Preço: R$ ${preco}`;
+    const detalhes = `Produto criado com Qtd: ${quantidade}, Preço: R$ ${preco}, Min: ${min_stock}, Max: ${max_stock}`;
     db.run('INSERT INTO historico_produtos (produto_id, produto_nome, acao, detalhes, usuario_nome) VALUES (?, ?, ?, ?, ?)',
       [novoProdutoId, nome, 'CRIADO', detalhes, usuario_nome]);
 
-    res.status(201).json({ id: novoProdutoId, nome, quantidade, preco });
+    res.status(201).json({ id: novoProdutoId, nome, quantidade, preco, min_stock, max_stock });
   });
 });
 
@@ -158,20 +163,24 @@ app.post('/api/produtos/remover-quantidade', authenticateToken, (req, res) => {
 
 // Atualizar Produto 
 app.put('/api/produtos/:id', authenticateToken, (req, res) => {
-  const { nome, quantidade, preco } = req.body;
+  const { nome, quantidade, preco, min_stock, max_stock } = req.body;
   const { id } = req.params;
   const usuario_nome = req.user.nome;
 
-  // Busca o estado antigo do produto para comparar
+  if (preco < 0) {
+    return res.status(400).json({ error: 'O preço не pode ser negativo.' });
+  }
+
   db.get('SELECT * FROM produtos WHERE id = ?', [id], (err, produtoAntigo) => {
     if (err) return res.status(500).json({ error: err.message });
     if (!produtoAntigo) return res.status(404).json({ error: 'Produto não encontrado' });
     
-    db.run('UPDATE produtos SET nome = ?, quantidade = ?, preco = ? WHERE id = ?', [nome, quantidade, preco, id], function (err) {
+    const sql = 'UPDATE produtos SET nome = ?, quantidade = ?, preco = ?, min_stock = ?, max_stock = ? WHERE id = ?';
+
+    db.run(sql, [nome, quantidade, preco, min_stock, max_stock, id], function (err) {
       if (err) return res.status(500).json({ error: err.message });
       
-      // Log da atualização com detalhes
-      const detalhes = `De [Qtd: ${produtoAntigo.quantidade}, Preço: R$ ${produtoAntigo.preco}] para [Qtd: ${quantidade}, Preço: R$ ${preco}]`;
+      const detalhes = `De [Qtd: ${produtoAntigo.quantidade}, Preço: R$ ${produtoAntigo.preco}, Min: ${produtoAntigo.min_stock}, Max: ${produtoAntigo.max_stock}] para [Qtd: ${quantidade}, Preço: R$ ${preco}, Min: ${min_stock}, Max: ${max_stock}]`;
       db.run('INSERT INTO historico_produtos (produto_id, produto_nome, acao, detalhes, usuario_nome) VALUES (?, ?, ?, ?, ?)',
         [id, nome, 'ATUALIZADO', detalhes, usuario_nome]);
         
@@ -224,5 +233,36 @@ app.post('/api/login', (req, res) => {
     } else {
       res.status(401).json({ error: 'Credenciais inválidas' });
     }
+  });
+});
+
+// Endpoint para dados agregados (valor total, contagens, etc.)
+app.get('/api/dashboard/stats', authenticateToken, (req, res) => {
+  const sql = `
+    SELECT
+      SUM(quantidade * preco) as totalValue,
+      COUNT(CASE WHEN quantidade < min_stock THEN 1 END) as lowStockCount,
+      COUNT(CASE WHEN quantidade > max_stock THEN 1 END) as highStockCount
+    FROM produtos
+  `;
+  db.get(sql, [], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(row);
+  });
+});
+
+// Endpoint para listar produtos com estoque baixo
+app.get('/api/dashboard/low-stock', authenticateToken, (req, res) => {
+  db.all('SELECT id, nome, quantidade, min_stock FROM produtos WHERE quantidade < min_stock ORDER BY quantidade ASC LIMIT 5', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+// Endpoint para listar produtos com estoque alto
+app.get('/api/dashboard/high-stock', authenticateToken, (req, res) => {
+  db.all('SELECT id, nome, quantidade, max_stock FROM produtos WHERE quantidade > max_stock ORDER BY quantidade DESC LIMIT 5', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
   });
 });
