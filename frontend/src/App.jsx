@@ -110,7 +110,14 @@ function App() {
           >
             Estoque
           </button>
-          
+
+          <button 
+            className={`sidebar-button ${activeView === 'relatorios' ? 'active' : ''}`}
+            onClick={() => setActiveView('relatorios')}
+          >
+            Relatórios
+          </button>
+
           {/* NOVO: Botão de Cadastro, visível apenas para o gerente */}
           {user.role === 'gerente' && (
             <button
@@ -120,13 +127,6 @@ function App() {
               Cadastro
             </button>
           )}
-
-          <button 
-            className={`sidebar-button ${activeView === 'relatorios' ? 'active' : ''}`}
-            onClick={() => setActiveView('relatorios')}
-          >
-            Relatórios
-          </button>
         </aside>
 
         <div className="content-and-footer-wrapper">
