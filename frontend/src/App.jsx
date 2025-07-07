@@ -78,7 +78,12 @@ function App() {
     <div className="dashboard-container">
       <header className="dashboard-header">
         <div className="header-left">
-          <h2 className="header-title">Estocaí</h2>
+          <button 
+            className={`header-title ${activeView === 'inicio' ? 'active' : ''}`}
+            onClick={() => setActiveView('inicio')}
+          >
+            Estocaí
+          </button>
           <p className="header-user-info">
             Logado como: <strong>{user.nome} ({user.role})</strong> 
           </p>

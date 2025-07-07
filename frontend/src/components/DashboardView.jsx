@@ -56,7 +56,7 @@ export default function DashboardView({ token }) {
       <div className="dashboard-grid">
         <div className="dashboard-card">
           <h3>Valor Total do Estoque</h3>
-          <p style={{fontSize: '2em', fontWeight: 'bold', color: '#5a31f4'}}>
+          <p style={{fontSize: '2em', fontWeight: 'bold', color: '#f48a00'}}>
             R$ {(stats.totalValue || 0).toFixed(2)}
           </p>
         </div>
