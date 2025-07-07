@@ -5,6 +5,15 @@ body {
   transition: background-color 0.5s ease;
 }
 
+/* Container para a página de login que ocupa a tela inteira e centraliza seu conteúdo */
+.login-page-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /* Classe para o fundo da TELA DE LOGIN */
 .login-background {
   background-color: #242424; /* Fundo escuro caso a imagem não carregue */

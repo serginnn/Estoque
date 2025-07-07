@@ -22,30 +22,32 @@ export default function Login({ onLogin, onIrParaCadastro }) {
   };
 
   return (
-    <div className="auth-container">
-      <h2 className="nada">Login</h2>
-      
-      <input
-        className="input" // Classe corrigida
-        placeholder="Usuário"
-        value={nome}
-        onChange={e => setNome(e.target.value)}
-      />
+    <div className="login-page-wrapper">
+      <div className="auth-container">
+        <h2 className="nada">Login</h2>
+        
+        <input
+          className="input" // Classe corrigida
+          placeholder="Usuário"
+          value={nome}
+          onChange={e => setNome(e.target.value)}
+        />
 
-      <input
-        className="input" // Classe corrigida
-        type="password"
-        placeholder="Senha"
-        value={senha}
-        onChange={e => setSenha(e.target.value)}
-      />
+        <input
+          className="input" // Classe corrigida
+          type="password"
+          placeholder="Senha"
+          value={senha}
+          onChange={e => setSenha(e.target.value)}
+        />
 
-      <button className="button" onClick={logar}>
-        Entrar
-      </button>
+        <button className="button" onClick={logar}>
+          Entrar
+        </button>
 
 
-      {erro && <p className="erro">{erro}</p>}
+        {erro && <p className="erro">{erro}</p>}
+      </div>
     </div>
   );
 }
