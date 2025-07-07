@@ -18,8 +18,50 @@ const Modal = ({ show, onClose, title, children }) => {
   );
 };
 
-// Componente para o formulário de remoção ---
-const RemoveProductForm = ({ token, onProductRemoved }) => {
+// --- Formulário para Adicionar Quantidade (já existente) ---
+const AddQuantityForm = ({ token, onActionComplete }) => {
+  const [nome, setNome] = useState('');
+  const [quantidadeAdicionar, setQuantidadeAdicionar] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleAddQuantity = () => {
+    setError('');
+    setSuccess('');
+    fetch('/api/produtos/adicionar-quantidade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ nome, quantidadeAdicionar: +quantidadeAdicionar })
+    })
+    .then(async res => {
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error);
+      }
+      return res.json();
+    })
+    .then(data => {
+      setSuccess(data.message);
+      setNome('');
+      setQuantidadeAdicionar('');
+      onActionComplete();
+    })
+    .catch(err => setError(err.message));
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <input className="input" placeholder="Nome do Produto Existente" value={nome} onChange={(e) => setNome(e.target.value)} />
+      <input className="input" placeholder="Quantidade a Adicionar" type="number" min="1" value={quantidadeAdicionar} onChange={(e) => setQuantidadeAdicionar(e.target.value)} />
+      {error && <p className="erro">{error}</p>}
+      {success && <p style={{ color: 'green' }}>{success}</p>}
+      <button className="btn btn-primary" onClick={handleAddQuantity}>Confirmar Adição</button>
+    </div>
+  );
+};
+
+// --- NOVO: Componente para o formulário de Remover Quantidade ---
+const RemoveQuantityForm = ({ token, onActionComplete }) => {
   const [nome, setNome] = useState('');
   const [quantidade, setQuantidade] = useState('');
   const [error, setError] = useState('');
@@ -28,7 +70,6 @@ const RemoveProductForm = ({ token, onProductRemoved }) => {
   const handleRemove = () => {
     setError('');
     setSuccess('');
-
     fetch('/api/produtos/remover-quantidade', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -45,32 +86,18 @@ const RemoveProductForm = ({ token, onProductRemoved }) => {
       setSuccess(data.message);
       setNome('');
       setQuantidade('');
-      onProductRemoved(); // Atualiza a tabela
+      onActionComplete();
     })
-    .catch(err => {
-      setError(err.message);
-    });
+    .catch(err => setError(err.message));
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <input
-        className="input"
-        placeholder="Nome do Produto"
-        value={nome}
-        onChange={(e) => setNome(e.target.value)}
-      />
-      <input
-        className="input"
-        placeholder="Quantidade a ser removida"
-        type="number"
-        min="1"
-        value={quantidade}
-        onChange={(e) => setQuantidade(e.target.value)}
-      />
-      {error && <p className="erro" style={{ marginTop: 0 }}>{error}</p>}
-      {success && <p style={{ color: 'green', marginTop: 0 }}>{success}</p>}
-      <button className="btn btn-primary" style={{ alignSelf: 'flex-end', backgroundColor: '#dc3545', borderColor: '#dc3545' }} onClick={handleRemove}>
+      <input className="input" placeholder="Nome do Produto" value={nome} onChange={(e) => setNome(e.target.value)} />
+      <input className="input" placeholder="Quantidade a ser removida" type="number" min="1" value={quantidade} onChange={(e) => setQuantidade(e.target.value)} />
+      {error && <p className="erro">{error}</p>}
+      {success && <p style={{ color: 'green' }}>{success}</p>}
+      <button className="btn btn-primary" style={{ backgroundColor: '#dc3545', borderColor: '#dc3545' }} onClick={handleRemove}>
         Confirmar Remoção
       </button>
     </div>
@@ -78,13 +105,19 @@ const RemoveProductForm = ({ token, onProductRemoved }) => {
 };
 
 
+// --- Componente Principal da Tela de Estoque (com todas as atualizações) ---
 export default function StockView({ token }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isAddQuantityModalOpen, setIsAddQuantityModalOpen] = useState(false);
+  // NOVO: Estado para o modal de remoção
+  const [isRemoveQuantityModalOpen, setIsRemoveQuantityModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleActionComplete = () => {
-    setIsModalOpen(false); // Fecha o modal se estiver aberto
-    setRefreshKey(prevKey => prevKey + 1); // Força a atualização da tabela
+    setIsRegisterModalOpen(false);
+    setIsAddQuantityModalOpen(false);
+    setIsRemoveQuantityModalOpen(false); // ALTERADO: Também fecha o modal de remoção
+    setRefreshKey(prevKey => prevKey + 1);
   };
 
   return (
@@ -93,23 +126,35 @@ export default function StockView({ token }) {
 
       <header className="stock-header">
         <div className="stock-header-actions">
-          <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
+          <button className="btn btn-primary" onClick={() => setIsRegisterModalOpen(true)}>
             + Cadastrar produto
+          </button>
+          
+          <button className="btn btn-secondary" onClick={() => setIsAddQuantityModalOpen(true)}>
+            + Adicionar Quantidade
+          </button>
+
+          {/* NOVO: Botão para abrir o modal de remoção de quantidade */}
+          <button className="btn btn-secondary" style={{ color: '#dc3545', borderColor: '#dc3545' }} onClick={() => setIsRemoveQuantityModalOpen(true)}>
+            - Remover Quantidade
           </button>
         </div>
       </header>
       
-      <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)} title="Cadastrar Novo Produto">
+      <Modal show={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} title="Cadastrar Novo Produto">
         <ProductForm token={token} onProductAdded={handleActionComplete} />
       </Modal>
 
-      <ProductTable token={token} key={refreshKey} />
+      <Modal show={isAddQuantityModalOpen} onClose={() => setIsAddQuantityModalOpen(false)} title="Adicionar Quantidade ao Estoque">
+        <AddQuantityForm token={token} onActionComplete={handleActionComplete} />
+      </Modal>
 
-      {/* Seção de Remoção de Produtos */}
-      <div className="remove-product-section">
-        <h3>Remover Quantidade do Estoque</h3>
-        <RemoveProductForm token={token} onProductRemoved={handleActionComplete} />
-      </div>
+      {/* NOVO: O modal para remover quantidade */}
+      <Modal show={isRemoveQuantityModalOpen} onClose={() => setIsRemoveQuantityModalOpen(false)} title="Remover Quantidade do Estoque">
+        <RemoveQuantityForm token={token} onActionComplete={handleActionComplete} />
+      </Modal>
+
+      <ProductTable token={token} key={refreshKey} />
     </div>
   );
 }

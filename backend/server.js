@@ -18,7 +18,7 @@ app.use(express.json());
 //Tabela de produtos
 db.run(`CREATE TABLE IF NOT EXISTS produtos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  nome TEXT NOT NULL,
+  nome TEXT NOT NULL UNIQUE,
   quantidade INTEGER,
   preco REAL,
   min_stock INTEGER DEFAULT 10,
@@ -264,5 +264,39 @@ app.get('/api/dashboard/high-stock', authenticateToken, (req, res) => {
   db.all('SELECT id, nome, quantidade, max_stock FROM produtos WHERE quantidade > max_stock ORDER BY quantidade DESC LIMIT 5', [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
+  });
+});
+
+// NOVO ENDPOINT: Adicionar uma quantidade a um produto existente
+app.post('/api/produtos/adicionar-quantidade', authenticateToken, (req, res) => {
+  const { nome, quantidadeAdicionar } = req.body;
+  const usuario_nome = req.user.nome;
+
+  // Validações
+  if (!nome || !quantidadeAdicionar) {
+    return res.status(400).json({ error: 'Nome do produto e quantidade são obrigatórios.' });
+  }
+  if (parseInt(quantidadeAdicionar) <= 0) {
+    return res.status(400).json({ error: 'A quantidade a ser adicionada deve ser maior que zero.' });
+  }
+
+  // Busca o produto pelo nome
+  db.get('SELECT * FROM produtos WHERE nome = ?', [nome], (err, produto) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!produto) return res.status(404).json({ error: `Produto com o nome "${nome}" não encontrado.` });
+
+    const novaQuantidade = produto.quantidade + parseInt(quantidadeAdicionar);
+
+    // Atualiza a quantidade do produto
+    db.run('UPDATE produtos SET quantidade = ? WHERE id = ?', [novaQuantidade, produto.id], function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+
+      // Log da entrada de quantidade no histórico
+      const detalhes = `${quantidadeAdicionar} unidade(s) adicionada(s). Estoque anterior: ${produto.quantidade}, Estoque atual: ${novaQuantidade}.`;
+      db.run('INSERT INTO historico_produtos (produto_id, produto_nome, acao, detalhes, usuario_nome) VALUES (?, ?, ?, ?, ?)',
+        [produto.id, produto.nome, 'ENTRADA', detalhes, usuario_nome]);
+      
+      res.json({ message: 'Quantidade adicionada com sucesso!' });
+    });
   });
 });
