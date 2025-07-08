@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export default function ProductTable({ token, refreshKey, searchTerm }) {
+export default function ProductTable({ token, refreshKey, searchTerm, onActionComplete }) {
   const [allProducts, setAllProducts] = useState([]);
   const [produtos, setProdutos] = useState([]);
   const [editando, setEditando] = useState(null);
@@ -34,7 +34,9 @@ export default function ProductTable({ token, refreshKey, searchTerm }) {
 
   const deletarProduto = (id) => {
     fetch(`/api/produtos/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }})
-    .then(() => carregarProdutos());
+    .then(() => {
+      if(onActionComplete) onActionComplete(); // Chama a função do componente pai
+    });
   };
   
   const iniciarEdicao = (produto) => {
@@ -61,7 +63,7 @@ export default function ProductTable({ token, refreshKey, searchTerm }) {
       body: JSON.stringify(form)
     }).then(() => {
       setEditando(null);
-      carregarProdutos();
+      if(onActionComplete) onActionComplete();
     });
   };
 

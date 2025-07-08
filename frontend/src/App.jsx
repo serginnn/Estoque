@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import ProductForm from './components/ProductForm';
-import ProductTable from './components/ProductTable';
 import Login from './components/Login';
 import GerenteDashboard from './components/GerenteDashboard';
 import RelatoriosView from './components/RelatoriosView';

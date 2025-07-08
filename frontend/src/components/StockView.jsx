@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import ProductForm from './ProductForm';
-import ProductTable from './ProductTable';
-import RecentActivity from './RecentActivity';
+import StockProductTable from './StockProductTable'; // Usa a tabela simples
 
-// --- Componente do Modal ---
+
+// --- Reintroduzindo os componentes de Modal e Forms nesta View ---
 const Modal = ({ show, onClose, title, children }) => {
   if (!show) return null;
   return (
@@ -19,101 +19,91 @@ const Modal = ({ show, onClose, title, children }) => {
   );
 };
 
-// --- Formulário de Adicionar Quantidade ---
 const AddQuantityForm = ({ token, onActionComplete }) => {
-  const [nome, setNome] = useState('');
-  const [quantidadeAdicionar, setQuantidadeAdicionar] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+    // ... (O código do AddQuantityForm permanece o mesmo de antes)
+    const [nome, setNome] = useState('');
+    const [quantidadeAdicionar, setQuantidadeAdicionar] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
-  const handleAddQuantity = () => {
-    setError('');
-    setSuccess('');
-    fetch('/api/produtos/adicionar-quantidade', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ nome, quantidadeAdicionar: +quantidadeAdicionar })
-    })
-    .then(async res => {
-      if (!res.ok) { const errData = await res.json(); throw new Error(errData.error); }
-      return res.json();
-    })
-    .then(data => {
-      setSuccess(data.message);
-      onActionComplete(`Adicionou ${quantidadeAdicionar} unidade(s) ao produto "${nome}".`);
-      setNome('');
-      setQuantidadeAdicionar('');
-    })
-    .catch(err => setError(err.message));
-  };
-  
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <input className="input" placeholder="Nome do Produto Existente" value={nome} onChange={(e) => setNome(e.target.value)} />
-      <input className="input" placeholder="Quantidade a Adicionar" type="number" min="1" value={quantidadeAdicionar} onChange={(e) => setQuantidadeAdicionar(e.target.value)} />
-      {error && <p className="erro">{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
-      <button className="btn btn-primary" onClick={handleAddQuantity}>Confirmar Adição</button>
-    </div>
-  );
+    const handleAddQuantity = () => {
+      setError(''); setSuccess('');
+      fetch('/api/produtos/adicionar-quantidade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ nome, quantidadeAdicionar: +quantidadeAdicionar })
+      })
+      .then(async res => {
+        if (!res.ok) { const errData = await res.json(); throw new Error(errData.error); }
+        return res.json();
+      })
+      .then(data => {
+        setSuccess(data.message);
+        onActionComplete(`Adicionou ${quantidadeAdicionar} unidade(s) ao produto "${nome}".`);
+        setNome(''); setQuantidadeAdicionar('');
+      })
+      .catch(err => setError(err.message));
+    };
+    
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <input className="input" placeholder="Nome do Produto Existente" value={nome} onChange={(e) => setNome(e.target.value)} />
+        <input className="input" placeholder="Quantidade a Adicionar" type="number" min="1" value={quantidadeAdicionar} onChange={(e) => setQuantidadeAdicionar(e.target.value)} />
+        {error && <p className="erro">{error}</p>}
+        {success && <p style={{ color: 'green' }}>{success}</p>}
+        <button className="btn btn-primary" onClick={handleAddQuantity}>Confirmar Adição</button>
+      </div>
+    );
 };
 
-// --- Formulário de Remover Quantidade ---
 const RemoveQuantityForm = ({ token, onActionComplete }) => {
-  const [nome, setNome] = useState('');
-  const [quantidade, setQuantidade] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  const handleRemove = () => {
-    setError('');
-    setSuccess('');
-    fetch('/api/produtos/remover-quantidade', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ nome, quantidade: +quantidade })
-    })
-    .then(async res => {
-      if (!res.ok) { const errData = await res.json(); throw new Error(errData.error); }
-      return res.json();
-    })
-    .then(data => {
-      setSuccess(data.message);
-      onActionComplete(`Removeu ${quantidade} unidade(s) do produto "${nome}".`);
-      setNome('');
-      setQuantidade('');
-    })
-    .catch(err => setError(err.message));
-  };
+    // ... (O código do RemoveQuantityForm permanece o mesmo de antes)
+    const [nome, setNome] = useState('');
+    const [quantidade, setQuantidade] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
   
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <input className="input" placeholder="Nome do Produto" value={nome} onChange={(e) => setNome(e.target.value)} />
-      <input className="input" placeholder="Quantidade a ser removida" type="number" min="1" value={quantidade} onChange={(e) => setQuantidade(e.target.value)} />
-      {error && <p className="erro">{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
-      <button className="btn btn-primary" style={{ backgroundColor: '#dc3545', borderColor: '#dc3545' }} onClick={handleRemove}>
-        Confirmar Remoção
-      </button>
-    </div>
-  );
+    const handleRemove = () => {
+      setError(''); setSuccess('');
+      fetch('/api/produtos/remover-quantidade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ nome, quantidade: +quantidade })
+      })
+      .then(async res => {
+        if (!res.ok) { const errData = await res.json(); throw new Error(errData.error); }
+        return res.json();
+      })
+      .then(data => {
+        setSuccess(data.message);
+        onActionComplete(`Removeu ${quantidade} unidade(s) do produto "${nome}".`);
+        setNome(''); setQuantidade('');
+      })
+      .catch(err => setError(err.message));
+    };
+    
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <input className="input" placeholder="Nome do Produto" value={nome} onChange={(e) => setNome(e.target.value)} />
+        <input className="input" placeholder="Quantidade a ser removida" type="number" min="1" value={quantidade} onChange={(e) => setQuantidade(e.target.value)} />
+        {error && <p className="erro">{error}</p>}
+        {success && <p style={{ color: 'green' }}>{success}</p>}
+        <button className="btn btn-primary" style={{ backgroundColor: '#dc3545', borderColor: '#dc3545' }} onClick={handleRemove}>
+          Confirmar Remoção
+        </button>
+      </div>
+    );
 };
-
 
 // --- Componente Principal da Tela de Estoque ---
-export default function StockView({ token, sessionActivity, addActivityLog }) {
+export default function StockView({ token }) {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isAddQuantityModalOpen, setIsAddQuantityModalOpen] = useState(false);
   const [isRemoveQuantityModalOpen, setIsRemoveQuantityModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-
-  // CORREÇÃO: A declaração do estado da pesquisa estava faltando
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleActionComplete = (logMessage) => {
-    if (logMessage) {
-        addActivityLog(logMessage);
-    }
     setIsRegisterModalOpen(false);
     setIsAddQuantityModalOpen(false);
     setIsRemoveQuantityModalOpen(false);
@@ -121,7 +111,7 @@ export default function StockView({ token, sessionActivity, addActivityLog }) {
   };
 
   const handleProductAdded = () => {
-    handleActionComplete("Novo produto cadastrado.");
+    handleActionComplete();
   };
 
   return (
@@ -163,8 +153,8 @@ export default function StockView({ token, sessionActivity, addActivityLog }) {
         <RemoveQuantityForm token={token} onActionComplete={handleActionComplete} />
       </Modal>
       
-      <RecentActivity sessionActivity={sessionActivity} />
-      <ProductTable token={token} refreshKey={refreshKey} searchTerm={searchTerm} />
+      {/* A tabela aqui é a de LEITURA, sem os botões de editar/excluir */}
+      <StockProductTable token={token} searchTerm={searchTerm} refreshKey={refreshKey} />
     </div>
   );
 }
