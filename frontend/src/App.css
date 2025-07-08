@@ -520,3 +520,36 @@
 .action-criado, .action-entrada { background-color: #28a745; } /* Verde */
 .action-deletado, .action-saída { background-color: #dc3545; } /* Vermelho */
 .action-atualizado { background-color: #007bff; } /* Azul */
+
+/* Em App.css */
+
+/* NOVO: Estilo para o container da busca */
+.stock-header-search {
+  display: flex;
+  align-items: center;
+}
+
+/* NOVO: Estilo para o input de busca */
+.search-input {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95em;
+  width: 250px; /* Largura do campo de busca */
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #f48a00;
+  box-shadow: 0 0 0 3px rgba(244, 138, 0, 0.15);
+}
+
+/* NOVO: Estilo para a célula de "Nenhum resultado" na tabela */
+.no-results-cell {
+  text-align: center;
+  padding: 2rem !important;
+  color: #dc3545; /* Vermelho */
+  font-weight: 500;
+  font-style: italic;
+}

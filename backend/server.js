@@ -75,6 +75,19 @@ app.get('/api/historico', authenticateToken, (req, res) => {
   });
 });
 
+// Rota para buscar todos os produtos
+app.get('/api/produtos', authenticateToken, (req, res) => {
+  const sql = 'SELECT * FROM produtos ORDER BY nome ASC'; // Ordenar por nome é uma boa prática
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
 // Adicionar Produto 
 app.post('/api/produtos', authenticateToken, (req, res) => {
   const { nome, quantidade, preco, min_stock, max_stock } = req.body;

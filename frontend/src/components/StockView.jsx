@@ -46,7 +46,7 @@ const AddQuantityForm = ({ token, onActionComplete }) => {
     })
     .catch(err => setError(err.message));
   };
-
+  
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <input className="input" placeholder="Nome do Produto Existente" value={nome} onChange={(e) => setNome(e.target.value)} />
@@ -107,22 +107,20 @@ export default function StockView({ token, sessionActivity, addActivityLog }) {
   const [isRemoveQuantityModalOpen, setIsRemoveQuantityModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
+  // CORREÇÃO: A declaração do estado da pesquisa estava faltando
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleActionComplete = (logMessage) => {
-    addActivityLog(logMessage); // Chama a função do App.jsx
-
+    if (logMessage) {
+        addActivityLog(logMessage);
+    }
     setIsRegisterModalOpen(false);
     setIsAddQuantityModalOpen(false);
     setIsRemoveQuantityModalOpen(false);
     setRefreshKey(prevKey => prevKey + 1);
   };
 
-  const handleProductAdded = (logMessage) => {
-    handleActionComplete(logMessage);
-  };
-  
-  // No ProductForm, precisamos de uma função específica para o log
-  const handleProductAddedForForm = () => {
+  const handleProductAdded = () => {
     handleActionComplete("Novo produto cadastrado.");
   };
 
@@ -130,7 +128,6 @@ export default function StockView({ token, sessionActivity, addActivityLog }) {
     <div>
       <h1 className="main-content-title">Estoque</h1>
 
-      {/* OS BOTÕES FORAM ADICIONADOS DE VOLTA AQUI DENTRO DO HEADER */}
       <header className="stock-header">
         <div className="stock-header-actions">
           <button className="btn btn-primary" onClick={() => setIsRegisterModalOpen(true)}>
@@ -143,10 +140,19 @@ export default function StockView({ token, sessionActivity, addActivityLog }) {
             - Remover Quantidade
           </button>
         </div>
+        <div className="stock-header-search">
+          <input
+            type="search"
+            className="search-input"
+            placeholder="Pesquisar por nome..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+        </div>
       </header>
       
       <Modal show={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} title="Cadastrar Novo Produto">
-        <ProductForm token={token} onProductAdded={handleProductAddedForForm} />
+        <ProductForm token={token} onProductAdded={handleProductAdded} />
       </Modal>
 
       <Modal show={isAddQuantityModalOpen} onClose={() => setIsAddQuantityModalOpen(false)} title="Adicionar Quantidade ao Estoque">
@@ -158,7 +164,7 @@ export default function StockView({ token, sessionActivity, addActivityLog }) {
       </Modal>
       
       <RecentActivity sessionActivity={sessionActivity} />
-
+      <ProductTable token={token} refreshKey={refreshKey} searchTerm={searchTerm} />
     </div>
   );
 }
