@@ -79,10 +79,6 @@ export default function DashboardView({ token }) {
           </ul>
         </div>
 
-        <div className="dashboard-card">
-          <h3>Notificações/Alertas</h3>
-          <p>Nenhuma notificação no momento.</p>
-        </div>
       </div>
     </div>
   );
