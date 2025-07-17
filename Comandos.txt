@@ -1,4 +1,5 @@
-Comandos
+Comandos:
+
 rodar o front-end:
 cd frontend
 npm install
