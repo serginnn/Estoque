@@ -10,18 +10,14 @@ import './index.css';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(sessionStorage.getItem('token')); // NOVO: Estado para o token
+  const [token, setToken] = useState(sessionStorage.getItem('token')); 
   
-  //Estado para controlar a view ativa. Começa com 'estoque'.
   const [activeView, setActiveView] = useState('inicio');
 
   const [sessionActivity, setSessionActivity] = useState([]);
-  // Efeito para carregar usuário a partir do token ao iniciar
   useEffect(() => {
     const storedToken = sessionStorage.getItem('token');
     if (storedToken) {
-      // A API de login agora retorna o token e o objeto 'user'
-      // Para simplificar, vamos buscar o usuário no localStorage também
       const storedUser = sessionStorage.getItem('user');
       if(storedUser) {
         try {
@@ -30,7 +26,6 @@ function App() {
           setToken(storedToken);
         } catch (error) {
           console.error("Erro ao fazer parse do usuário do sessionStorage:", error);
-          // ALTERADO: Limpa o sessionStorage em caso de erro
           sessionStorage.removeItem('user');
           sessionStorage.removeItem('token');
         }
@@ -38,7 +33,6 @@ function App() {
     }
   }, []);
 
-  // Efeito para classes do body 
   useEffect(() => {
     document.body.classList.remove('login-background', 'app-background');
     if (user) {
@@ -51,7 +45,6 @@ function App() {
     };
   }, [user]);
 
-  // ALTERADO: handleLogin agora recebe dados da API (token e user)
   const handleLogin = (data) => {
     sessionStorage.setItem('token', data.token);
     sessionStorage.setItem('user', JSON.stringify(data.user));
@@ -74,17 +67,14 @@ function App() {
         message: logMessage,
         time: new Date().toLocaleTimeString('pt-BR'),
       };
-      // Adiciona a nova atividade no topo da lista
       setSessionActivity(prevActivity => [newActivity, ...prevActivity]);
     }
   };
 
-  // Se não estiver logado (sem usuário/token), mostra o Login
   if (!user) {
     return <Login onLogin={handleLogin} />;
   }
 
-  // Se ESTIVER LOGADO, renderiza o dashboard
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
@@ -131,7 +121,6 @@ function App() {
             </button>
           )}
 
-          {/* Botão de Cadastro, visível apenas para o gerente */}
           {user.role === 'gerente' && (
             <button
               className={`sidebar-button ${activeView === 'cadastro' ? 'active' : ''}`}
@@ -144,7 +133,6 @@ function App() {
 
         <div className="content-and-footer-wrapper">
           <main className="main-content">
-            {/* Renderiza o conteúdo com base na view ativa */}
             {activeView === 'estoque' && <StockView token={token} sessionActivity={sessionActivity} addActivityLog={addActivityLog} />}
             
             {activeView === 'cadastro' && <GerenteDashboard token={token} />}

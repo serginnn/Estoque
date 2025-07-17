@@ -47,20 +47,19 @@ db.run(`CREATE TABLE IF NOT EXISTS historico_produtos (
 // Ele irá verificar o token em cada requisição protegida
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Formato "Bearer TOKEN"
+  const token = authHeader && authHeader.split(' ')[1]; 
 
-  if (token == null) return res.sendStatus(401); // Se não há token, não autorizado
+  if (token == null) return res.sendStatus(401);
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403); // Se o token não for válido, acesso proibido
     req.user = user; // Anexa os dados do usuário (payload do token) à requisição
-    next(); // Passa para a próxima função (a rota em si)
+    next(); 
   });
 };
 
 // Ele verifica se o usuário autenticado tem o cargo de 'gerente'
 const authorizeGerente = (req, res, next) => {
-    // Este middleware deve rodar DEPOIS do authenticateToken
     if (req.user.role !== 'gerente') {
         return res.status(403).json({ error: 'Acesso negado. Rota exclusiva para gerentes.' });
     }
@@ -77,8 +76,7 @@ app.get('/api/historico', authenticateToken, (req, res) => {
 
 // Rota para buscar todos os produtos
 app.get('/api/produtos', authenticateToken, (req, res) => {
-  const sql = 'SELECT * FROM produtos ORDER BY nome ASC'; // Ordenar por nome é uma boa prática
-
+  const sql = 'SELECT * FROM produtos ORDER BY nome ASC'; 
   db.all(sql, [], (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
@@ -118,7 +116,6 @@ app.delete('/api/produtos/:id', authenticateToken, (req, res) => {
    if (preco < 0) {
     return res.status(400).json({ error: 'O preço não pode ser negativo.' });
   }
-  // Primeiro, busca o nome do produto antes de deletar, para salvar no log
   db.get('SELECT nome FROM produtos WHERE id = ?', [produtoId], (err, produto) => {
     if (err) return res.status(500).json({ error: err.message });
     if (!produto) return res.status(404).json({ error: 'Produto não encontrado' });
@@ -140,7 +137,6 @@ app.post('/api/produtos/remover-quantidade', authenticateToken, (req, res) => {
   const { nome, quantidade } = req.body;
   const usuario_nome = req.user.nome;
 
-  // Validações iniciais
   if (!nome || !quantidade) {
     return res.status(400).json({ error: 'Nome do produto e quantidade são obrigatórios.' });
   }
@@ -206,12 +202,6 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
 
-// Cadastro de usuário
-
-// service
-
-//controlador (estrutura mvc)
-
 // cadastro
 app.post('/api/usuarios', authenticateToken, authorizeGerente, (req, res) => {
   const { nome, senha, role } = req.body;
@@ -237,7 +227,6 @@ app.post('/api/login', (req, res) => {
 
   db.get('SELECT * FROM usuarios WHERE nome = ? AND senha = ?', [nome, senha], (err, row) => {
     if (row) {
-      // Usuário encontrado, gerar o token!
       const payload = { id: row.id, nome: row.nome, role: row.role };
       const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '20m' }); // Token expira em 8 horas
 
@@ -249,7 +238,7 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// Endpoint para dados agregados (valor total, contagens, etc.)
+// Endpoint para dados agregados 
 app.get('/api/dashboard/stats', authenticateToken, (req, res) => {
   const sql = `
     SELECT
@@ -280,12 +269,11 @@ app.get('/api/dashboard/high-stock', authenticateToken, (req, res) => {
   });
 });
 
-// NOVO ENDPOINT: Adicionar uma quantidade a um produto existente
+//Adicionar uma quantidade a um produto existente
 app.post('/api/produtos/adicionar-quantidade', authenticateToken, (req, res) => {
   const { nome, quantidadeAdicionar } = req.body;
   const usuario_nome = req.user.nome;
 
-  // Validações
   if (!nome || !quantidadeAdicionar) {
     return res.status(400).json({ error: 'Nome do produto e quantidade são obrigatórios.' });
   }

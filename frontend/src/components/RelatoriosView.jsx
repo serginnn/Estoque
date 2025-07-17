@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from 'react';
 import ManagerProductTable from './ManagerProductTable'; // Usa a tabela completa do gerente
 
-// Função para renderizar o badge de ação (sem alterações)
 const renderActionBadge = (action) => {
     switch (action) {
       case 'CRIADO': case 'ENTRADA': return <span className="action-badge badge-created">Entrada</span>;
@@ -19,7 +18,6 @@ export default function RelatoriosView({ token }) {
   const [historico, setHistorico] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Função para forçar o recarregamento dos componentes filhos
   const handleActionComplete = () => {
     setRefreshKey(prevKey => prevKey + 1);
   };
@@ -39,12 +37,10 @@ export default function RelatoriosView({ token }) {
 
   return (
     <div>
-      {/* NOVO: Contêiner para o título e o botão */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 className="main-content-title" style={{ marginBottom: 0 }}>
           Gerenciamento de Catálogo e Relatórios
         </h1>
-        {/* BOTÃO MOVIDO PARA CÁ */}
         <button className="btn btn-secondary" onClick={handleScrollToHistory}>
           Ver Histórico de Transações ↓
         </button>
@@ -53,7 +49,6 @@ export default function RelatoriosView({ token }) {
       <section className="dashboard-card" style={{marginBottom: '2rem'}}>
         <h3>Catálogo de Produtos</h3>
         
-        {/* ALTERADO: A barra de busca agora fica sozinha */}
         <div className="stock-header-search" style={{ marginBottom: '1rem' }}>
             <input 
               type="search" 
@@ -62,7 +57,6 @@ export default function RelatoriosView({ token }) {
               value={searchTerm} 
               onChange={e => setSearchTerm(e.target.value)} 
             />
-            {/* O BOTÃO FOI MOVIDO DAQUI... */}
         </div>
         
         <ManagerProductTable 

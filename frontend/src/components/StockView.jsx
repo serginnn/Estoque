@@ -2,8 +2,6 @@ import { useState } from 'react';
 import ProductForm from './ProductForm';
 import StockProductTable from './StockProductTable'; // Usa a tabela simples
 
-
-// --- Reintroduzindo os componentes de Modal e Forms nesta View ---
 const Modal = ({ show, onClose, title, children }) => {
   if (!show) return null;
   return (
@@ -20,7 +18,6 @@ const Modal = ({ show, onClose, title, children }) => {
 };
 
 const AddQuantityForm = ({ token, onActionComplete }) => {
-    // ... (O código do AddQuantityForm permanece o mesmo de antes)
     const [nome, setNome] = useState('');
     const [quantidadeAdicionar, setQuantidadeAdicionar] = useState('');
     const [error, setError] = useState('');
@@ -57,7 +54,6 @@ const AddQuantityForm = ({ token, onActionComplete }) => {
 };
 
 const RemoveQuantityForm = ({ token, onActionComplete }) => {
-    // ... (O código do RemoveQuantityForm permanece o mesmo de antes)
     const [nome, setNome] = useState('');
     const [quantidade, setQuantidade] = useState('');
     const [error, setError] = useState('');
@@ -95,7 +91,6 @@ const RemoveQuantityForm = ({ token, onActionComplete }) => {
     );
 };
 
-// --- Componente Principal da Tela de Estoque ---
 export default function StockView({ token }) {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isAddQuantityModalOpen, setIsAddQuantityModalOpen] = useState(false);
@@ -153,7 +148,6 @@ export default function StockView({ token }) {
         <RemoveQuantityForm token={token} onActionComplete={handleActionComplete} />
       </Modal>
       
-      {/* A tabela aqui é a de LEITURA, sem os botões de editar/excluir */}
       <StockProductTable token={token} searchTerm={searchTerm} refreshKey={refreshKey} />
     </div>
   );

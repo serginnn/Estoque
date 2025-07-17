@@ -5,7 +5,7 @@ body {
   transition: background-color 0.5s ease;
 }
 
-/* Container para a página de login que ocupa a tela inteira e centraliza seu conteúdo */
+/* Container para a página de login */
 .login-page-wrapper {
   width: 100vw;
   height: 100vh;
@@ -29,7 +29,7 @@ body {
   align-items: flex-start;
   justify-content: flex-start;
   
-  background-color: #242424; /* Um cinza escuro e neutro */
+  background-color: #242424; 
   background-image: linear-gradient(180deg, #333742 0%, #242424 100%);
 }
 
@@ -121,12 +121,12 @@ body {
 /* Painel do Gerente */
 .register-form-container {
   display: flex;
-  justify-content: center; /* Centraliza horizontalmente */
-  align-items: center;    /* Centraliza verticalmente (se houver altura) */
-  padding: 2rem 0; /* Adiciona um espaço vertical */
+  justify-content: center; 
+  align-items: center;    
+  padding: 2rem 0; 
 }
 
-/* O título e o parágrafo usarão os estilos gerais que já existem */
+/* O título e o parágrafo */
 .main-content-title {
   color: #060606;
   margin-top: 0;

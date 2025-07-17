@@ -1,17 +1,17 @@
 #root {
   width: 100%;
   height: 100%;
-  text-align: center; /* Alinha o texto à esquerda por padrão */
+  text-align: center; 
 }
 
 .titulo {
-  font-size: 2.5em; /* Aumenta o tamanho da fonte */
-  color: #242424; /* Define uma cor para o título, se desejar */
-  margin-bottom: 2rem; /* Adiciona um espaço entre o título e a caixa de login */
+  font-size: 2.5em; 
+  color: #242424; 
+  margin-bottom: 2rem; 
 }
 .content{
   /* background-color: #ffffff; */
-  max-width: 28rem; /* 448px */
+  max-width: 28rem; 
   width: 100%;
 }
 
@@ -54,33 +54,33 @@
 /* --- Layout Principal do Dashboard --- */
 .dashboard-container {
   display: flex;
-  flex-direction: column; /* Organiza header e body em coluna */
-  height: 100vh; /* Ocupa a altura inteira da tela */
-  width: 100vw; /* Ocupa a largura inteira da tela */
+  flex-direction: column; 
+  height: 100vh; 
+  width: 100vw; 
 }
 
 .dashboard-body {
-  display: flex; /* Coloca sidebar e main lado a lado */
-  flex-grow: 1; /* Faz esta div ocupar todo o espaço restante na altura */
-  overflow: hidden; /* Evita barras de rolagem desnecessárias */
+  display: flex; 
+  flex-grow: 1; 
+  overflow: hidden; 
 }
 
 /* --- Cabeçalho (Header) --- */
 .dashboard-header {
   display: flex;
-  justify-content: space-between; /* Joga os itens para os cantos */
+  justify-content: space-between; 
   align-items: center;
-  padding: 0 2rem; /* Espaçamento interno horizontal */
+  padding: 0 2rem; 
   background-color: #f97b0dd8; 
   color: white;
-  height: 70px; /* Altura fixa para o cabeçalho */
-  flex-shrink: 0; /* Impede que o header encolha */
+  height: 70px; 
+  flex-shrink: 0; 
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 1.5rem; /* Espaço entre "Estocaí" e "Logado como..." */
+  gap: 1.5rem; 
 }
 
 .header-title {
@@ -108,8 +108,8 @@
 
 /* Ajusta o botão de sair que está no header */
 .dashboard-header .btn-logout {
-  margin: 0; /* Remove margens que ele possa ter */
-  background-color: #e63946; /* Um vermelho mais vivo */
+  margin: 0; 
+  background-color: #e63946; 
 }
 .dashboard-header .btn-logout:hover{
   background-color: #c02732;
@@ -117,10 +117,10 @@
 
 /* --- Barra Lateral (Sidebar) --- */
 .dashboard-sidebar {
-  width: 200px; /* Largura fixa da barra lateral */
+  width: 200px; 
   background-color: #f3882b; 
   padding: 1.5rem 1rem;
-  flex-shrink: 0; /* Impede que a sidebar encolha */
+  flex-shrink: 0; 
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -144,16 +144,16 @@
 }
 
 .sidebar-button.active {
-  background-color: #fcfcfc5d; /* Cor de fundo para o botão ativo */
+  background-color: #fcfcfc5d; 
   font-weight: bold;
 }
 
 /* --- Conteúdo Principal (Main Content) --- */
 .main-content {
-  flex-grow: 1; /* Faz o conteúdo principal ocupar todo o espaço restante na largura */
-  padding: 2rem; /* O "padding" que você pediu para o conteúdo */
+  flex-grow: 1; 
+  padding: 2rem; 
   overflow-y: auto; /* Adiciona scroll SÓ no conteúdo principal se ele for muito grande */
-  background-color: #f0f2f5; /* Fundo cinza claro para a área de trabalho */
+  background-color: #f0f2f5; 
 }
 
 .main-content-title {
@@ -165,10 +165,10 @@
 
 /* --- Estilos para a Tabela de Relatórios --- */
 
-/* A tabela principal: removemos bordas padrão e definimos espaçamento */
+/* A tabela principal */
 .report-table {
   width: 100%;
-  border-collapse: collapse; /* Garante que as bordas das células se unam */
+  border-collapse: collapse;
   margin-top: 2rem;
   font-size: 0.95em;
 }
@@ -177,15 +177,15 @@
 .report-table th {
   text-align: left;
   padding: 1rem;
-  color: #555; /* Cor de texto mais suave para o cabeçalho */
+  color: #555; 
   font-weight: 600;
-  border-bottom: 2px solid #e0e0e0; /* Linha sutil para separar o cabeçalho */
+  border-bottom: 2px solid #e0e0e0; 
 }
 
 /* As células do corpo da tabela */
 .report-table td {
   padding: 1rem;
-  border-bottom: 1px solid #f0f0f0; /* Linhas muito sutis entre as linhas */
+  border-bottom: 1px solid #f0f0f0; 
   color: #333;
 }
 
@@ -194,11 +194,11 @@
   border-bottom: none;
 }
 
-/* Célula do usuário: usa flexbox para alinhar o ícone e o nome */
+/* Célula do usuário:*/
 .user-cell {
   display: flex;
   align-items: center;
-  gap: 0.75rem; /* Espaço entre o ícone e o texto */
+  gap: 0.75rem; 
 }
 
 /* Ícone do usuário (SVG) */
@@ -211,7 +211,7 @@
 .action-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: 15px; /* Pílula arredondada */
+  border-radius: 15px; 
   font-weight: 600;
   font-size: 0.8em;
   color: #fff;
@@ -236,7 +236,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  flex-wrap: wrap; /* Permite que os itens quebrem a linha em telas menores */
+  flex-wrap: wrap; 
   gap: 1rem;
 }
 
@@ -260,7 +260,7 @@
   gap: 0.5rem;
 }
 
-/* Botão Primário (Roxo) */
+/* Botão Primário */
 .btn-primary {
   background-color: #f48a00;
   color: white;
@@ -288,7 +288,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8); /* Preto mais opaco */
+  background-color: rgba(0, 0, 0, 0.8); 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -326,20 +326,20 @@
   color: #888;
 }
 
-/* --- Estilos Modernos para Inputs --- */
+/* --- Estilos para Inputs --- */
 .input {
-  width: calc(100% - 2rem); /* Ajusta a largura considerando o padding */
+  width: calc(100% - 2rem); 
   padding: 0.8rem 1rem;
   margin-bottom: 1rem;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 1em;
-  box-sizing: border-box; /* Garante que padding e border não aumentem a largura */
+  box-sizing: border-box; 
 }
 
 .input:focus {
   outline: none;
-  border-color: #ffae00; /* Cor primária ao focar */
+  border-color: #ffae00; 
   box-shadow: 0 0 5px rgba(90, 49, 244, 0.3);
 }
 
@@ -413,7 +413,7 @@
   background-color: #2e2e2e71;
   color: #aaa;
   font-size: 0.9em;
-  border-top: 1px solid #e0e0e0; /* Adiciona uma linha sutil de separação */
+  border-top: 1px solid #e0e0e0; 
 }
 
 .app-footer a {
@@ -425,23 +425,23 @@
 }
 
 .content-and-footer-wrapper {
-  flex-grow: 1; /* Faz ocupar todo o espaço à direita da sidebar */
+  flex-grow: 1; 
   display: flex;
-  flex-direction: column; /* Empilha o conteúdo e o rodapé verticalmente */
+  flex-direction: column; 
   overflow: hidden; /* Evita barras de rolagem duplas */
 }
 
 /* --- Estilos para a Linha de Detalhes do Histórico --- */
 .history-details-cell {
-  padding: 1.5rem 2rem !important; /* Adiciona mais padding para destacar */
-  background-color: #fafafa; /* Um fundo levemente diferente para a área expandida */
-  box-shadow: inset 0 5px 8px -5px rgba(0,0,0,0.1); /* Sombra interna suave */
+  padding: 1.5rem 2rem !important; 
+  background-color: #fafafa; 
+  box-shadow: inset 0 5px 8px -5px rgba(0,0,0,0.1); 
 }
 
 .history-details-cell h4 {
   margin-top: 0;
   margin-bottom: 1rem;
-  color: #f48a00; /* Cor laranja do tema para o título */
+  color: #f48a00; 
   font-size: 1.1em;
 }
 
@@ -449,7 +449,7 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 200px; /* Altura máxima com barra de rolagem se o histórico for longo */
+  max-height: 200px; 
   overflow-y: auto;
 }
 
@@ -517,19 +517,18 @@
   color: #fff;
 }
 
-.action-criado, .action-entrada { background-color: #28a745; } /* Verde */
-.action-deletado, .action-saída { background-color: #dc3545; } /* Vermelho */
-.action-atualizado { background-color: #007bff; } /* Azul */
+.action-criado, .action-entrada { background-color: #28a745; } 
+.action-deletado, .action-saída { background-color: #dc3545; } 
+.action-atualizado { background-color: #007bff; } 
 
-/* Em App.css */
 
-/* NOVO: Estilo para o container da busca */
+/* Estilo para o container da busca */
 .stock-header-search {
   display: flex;
   align-items: center;
 }
 
-/* NOVO: Estilo para o input de busca */
+/* Estilo para o input de busca */
 .search-input {
   padding: 0.6rem 1rem;
   border-radius: 6px;
@@ -545,7 +544,7 @@
   box-shadow: 0 0 0 3px rgba(244, 138, 0, 0.15);
 }
 
-/* NOVO: Estilo para a célula de "Nenhum resultado" na tabela */
+/* Estilo para a célula de "Nenhum resultado" na tabela */
 .no-results-cell {
   text-align: center;
   padding: 2rem !important;

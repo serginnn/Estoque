@@ -1,13 +1,12 @@
 import { useState } from 'react';
 
-export default function Register({ token }) { // Recebe o token
+export default function Register({ token }) { 
   const [nome, setNome] = useState('');
   const [senha, setSenha] = useState('');
   const [mensagem, setMensagem] = useState('');
-  const [role, setRole] = useState('comum'); // Declara o estado 'role' e sua função 'setRole'
+  const [role, setRole] = useState('comum'); 
 
   const cadastrar = () => {
-    // Validação para garantir que um cargo foi selecionado
     if (!role) {
       setMensagem('Erro: Por favor, selecione um cargo.');
       return;

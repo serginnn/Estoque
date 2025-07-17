@@ -27,14 +27,14 @@ export default function Login({ onLogin, onIrParaCadastro }) {
         <h2 className="nada">Login</h2>
         
         <input
-          className="input" // Classe corrigida
+          className="input" 
           placeholder="Usuário"
           value={nome}
           onChange={e => setNome(e.target.value)}
         />
 
         <input
-          className="input" // Classe corrigida
+          className="input" 
           type="password"
           placeholder="Senha"
           value={senha}

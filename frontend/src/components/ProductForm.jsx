@@ -45,7 +45,6 @@ export default function ProductForm({ token, onProductAdded }) {
       <input className="input" placeholder="Quantidade Inicial" type="number" value={quantidade} onChange={(e) => setQuantidade(e.target.value)} />
       <input className="input" placeholder="Preço" type="number" min="0" step="0.01" value={preco} onChange={(e) => setPreco(e.target.value)} />
       
-      {/* NOVO: Inputs para estoque mínimo e máximo */}
       <div style={{ display: 'flex', gap: '1rem' }}>
         <input className="input" placeholder="Estoque Mínimo" type="number" min="0" value={minStock} onChange={(e) => setMinStock(e.target.value)} />
         <input className="input" placeholder="Estoque Máximo" type="number" min="0" value={maxStock} onChange={(e) => setMaxStock(e.target.value)} />

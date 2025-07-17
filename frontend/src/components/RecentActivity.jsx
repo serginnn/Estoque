@@ -1,5 +1,4 @@
 
-//recebe a lista de atividades e a exibe.
 export default function RecentActivity({ sessionActivity }) {
   return (
     <div className="recent-activity-container">
